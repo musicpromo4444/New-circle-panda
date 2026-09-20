@@ -1,0 +1,172 @@
+import { createFileRoute, useSearch } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
+import { ChevronLeft, Heart, Send } from "lucide-react";
+import { AppShell } from "@/components/AppShell";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { TimeAgo } from "@/components/TimeAgo";
+import { StandardBannerAd } from "@/components/ads/StandardBannerAd";
+import { useStore } from "@/lib/store";
+
+type Search = { thread?: string };
+
+export const Route = createFileRoute("/messages")({
+  validateSearch: (search: Record<string, unknown>): Search =>
+    typeof search["thread"] === "string" ? { thread: search["thread"] } : {},
+  head: () => ({
+    meta: [
+      { title: "Direct Messages — Circle Panda" },
+      {
+        name: "description",
+        content: "Anonymous direct messages with no expiry. Every message sent costs 1 Panda Coin.",
+      },
+      { property: "og:title", content: "Direct Messages — Circle Panda" },
+      { property: "og:description", content: "Pay-per-message anonymous chats, 1 BC each." },
+    ],
+  }),
+  component: MessagesPage,
+});
+
+function MessagesPage() {
+  const { threads, sendMessage, coins } = useStore();
+  const search = useSearch({ from: "/messages" });
+  const [activeId, setActiveId] = useState<string | null>(search.thread ?? null);
+  const [draft, setDraft] = useState("");
+  const bottom = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (search.thread) setActiveId(search.thread);
+  }, [search.thread]);
+
+  const active = threads.find((t) => t.id === activeId) ?? null;
+
+  useEffect(() => {
+    bottom.current?.scrollIntoView({ behavior: "smooth" });
+  }, [active?.messages.length]);
+
+  if (!active) {
+    return (
+      <AppShell title="Direct Messages" subtitle="No timers here — just 1 BC per message sent.">
+        <div className="space-y-3">
+          {threads.map((t, idx) => (
+            <div key={t.id} className="space-y-3">
+              <button
+                type="button"
+                onClick={() => setActiveId(t.id)}
+                className="panda-panel flex w-full items-center gap-3 rounded-2xl p-4 text-left transition-colors hover:bg-accent/40"
+              >
+                <span className="grid size-11 shrink-0 place-items-center rounded-full bg-secondary text-lg">
+                  {t.kind === "dating" ? "💗" : "🐼"}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-2">
+                    <span className="truncate font-medium">{t.name}</span>
+                    {t.kind === "dating" ? (
+                      <span className="rounded-full bg-[var(--dating)]/20 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-[var(--dating)] uppercase">
+                        Dating
+                      </span>
+                    ) : null}
+                  </span>
+                  <span className="mt-0.5 block truncate text-sm text-muted-foreground">
+                    {t.messages.at(-1)?.body ?? t.blurb}
+                  </span>
+                </span>
+                {t.messages.length ? (
+                  <TimeAgo
+                    at={t.messages.at(-1)!.at}
+                    className="shrink-0 text-[11px] text-muted-foreground"
+                  />
+                ) : null}
+              </button>
+              {(idx + 1) % 4 === 0 ? <StandardBannerAd index={Math.floor(idx / 4)} /> : null}
+            </div>
+          ))}
+        </div>
+      </AppShell>
+    );
+  }
+
+  return (
+    <AppShell title="Chat" subtitle={`Balance: ${coins} BC · each message costs 1 BC`}>
+      <div className="panda-panel overflow-hidden rounded-2xl">
+        {active.kind === "dating" ? (
+          <div className="flex items-center justify-center gap-2 bg-[var(--dating)] px-4 py-2 font-display text-sm font-bold tracking-[0.18em] text-[var(--dating-foreground)] uppercase">
+            <Heart className="size-4 fill-current" /> Dating Chat
+          </div>
+        ) : null}
+
+        <div className="flex items-center gap-2 border-b border-border px-3 py-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="gap-1 px-2"
+            onClick={() => setActiveId(null)}
+          >
+            <ChevronLeft className="size-4" /> All
+          </Button>
+          <span className="grid size-8 place-items-center rounded-full bg-secondary text-sm">
+            {active.kind === "dating" ? "💗" : "🐼"}
+          </span>
+          <div className="leading-tight">
+            <p className="text-sm font-medium">{active.name}</p>
+            <p className="text-[11px] text-muted-foreground">{active.blurb}</p>
+          </div>
+        </div>
+
+        <div className="max-h-[50vh] min-h-48 space-y-2.5 overflow-y-auto bg-secondary/20 p-3">
+          {active.messages.length === 0 ? (
+            <p className="py-8 text-center text-sm text-muted-foreground">
+              Say something first. It costs 1 BC.
+            </p>
+          ) : (
+            active.messages.map((m, idx) => (
+              <div key={m.id} className="space-y-2.5">
+                <div className={m.mine ? "text-right" : ""}>
+                  <p
+                    className={`inline-block max-w-[80%] rounded-2xl px-3.5 py-2 text-sm ${
+                      m.mine
+                        ? active.kind === "dating"
+                          ? "bg-[var(--dating)] text-[var(--dating-foreground)]"
+                          : "bg-primary text-primary-foreground"
+                        : "bg-card"
+                    }`}
+                  >
+                    {m.body}
+                  </p>
+                  <TimeAgo at={m.at} className="mt-0.5 block text-[10px] text-muted-foreground" />
+                </div>
+
+                {/* Standard Banner Ad after every sequence of 4 chat messages */}
+                {(idx + 1) % 4 === 0 ? (
+                  <div className="py-1">
+                    <StandardBannerAd index={Math.floor(idx / 4)} className="mx-auto max-w-md" />
+                  </div>
+                ) : null}
+              </div>
+            ))
+          )}
+          <div ref={bottom} />
+        </div>
+
+        <form
+          className="flex gap-2 border-t border-border p-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!draft.trim()) return;
+            sendMessage(active.id, draft.trim());
+            setDraft("");
+          }}
+        >
+          <Input
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="Type a message (1 BC)…"
+          />
+          <Button type="submit" className="shrink-0">
+            <Send className="size-4" />
+          </Button>
+        </form>
+      </div>
+    </AppShell>
+  );
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Panda Coins Connect",
+  "description": "Anonymous feed, 24-hour group chats, dating, events, tiered Coin Store & VIP passes with Paystack and Android WebView bridge, and admin management powered by Panda Coins.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

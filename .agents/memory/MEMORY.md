@@ -1,0 +1,1 @@
+- [TanStack Start on Replit](tanstack-start-replit.md) — use native TanStack/Vite plugins when the imported Lovable wrapper resolves without the SSR plugin.
