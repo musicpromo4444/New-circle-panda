@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ConfessionsRouteImport } from './routes/confessions'
 import { Route as CrushRouteImport } from './routes/crush'
 import { Route as DatingRouteImport } from './routes/dating'
 import { Route as EventsRouteImport } from './routes/events'
@@ -24,6 +25,11 @@ import { Route as GroupsGroupIdRouteImport } from './routes/groups.$groupId'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfessionsRoute = ConfessionsRouteImport.update({
+  id: '/confessions',
+  path: '/confessions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CrushRoute = CrushRouteImport.update({
@@ -79,6 +85,7 @@ const GroupsGroupIdRoute = GroupsGroupIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/confessions': typeof ConfessionsRoute
   '/crush': typeof CrushRoute
   '/dating': typeof DatingRoute
   '/events': typeof EventsRoute
@@ -92,6 +99,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/confessions': typeof ConfessionsRoute
   '/crush': typeof CrushRoute
   '/dating': typeof DatingRoute
   '/events': typeof EventsRoute
@@ -106,6 +114,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/confessions': typeof ConfessionsRoute
   '/crush': typeof CrushRoute
   '/dating': typeof DatingRoute
   '/events': typeof EventsRoute
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/confessions'
     | '/crush'
     | '/dating'
     | '/events'
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/confessions'
     | '/crush'
     | '/dating'
     | '/events'
@@ -147,6 +158,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/confessions'
     | '/crush'
     | '/dating'
     | '/events'
@@ -161,6 +173,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ConfessionsRoute: typeof ConfessionsRoute
   CrushRoute: typeof CrushRoute
   DatingRoute: typeof DatingRoute
   EventsRoute: typeof EventsRoute
@@ -180,6 +193,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/confessions': {
+      id: '/confessions'
+      path: '/confessions'
+      fullPath: '/confessions'
+      preLoaderRoute: typeof ConfessionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/crush': {
@@ -257,6 +277,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ConfessionsRoute: ConfessionsRoute,
   CrushRoute: CrushRoute,
   DatingRoute: DatingRoute,
   EventsRoute: EventsRoute,

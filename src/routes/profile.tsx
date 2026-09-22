@@ -67,7 +67,7 @@ function ProfilePage() {
     <AppShell title="Your Profile" subtitle="Anonymous to everyone else. Tracked only for you.">
       <section className="panda-panel rounded-2xl p-5">
         <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3">
-          <span className="grid size-14 shrink-0 place-items-center rounded-full bg-secondary text-2xl">
+          <span className={`grid size-14 shrink-0 place-items-center rounded-full bg-secondary text-2xl border-2 transition-all ${isVip ? "border-amber-400 shadow-[0_0_22px_rgba(251,191,36,0.7)] ring-4 ring-amber-400/15" : "border-primary/40 shadow-[0_0_14px_rgba(34,197,94,0.2)]"}`}>
             🐼
           </span>
           <div className="min-w-0">

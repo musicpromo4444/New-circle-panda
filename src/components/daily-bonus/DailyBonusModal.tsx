@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { useActiveAdCreative } from "@/components/ads/adInventoryStorage";
 import { openAdExternalUrl } from "@/components/ads/platformAdBridge";
+import { WEEKLY_LOGIN_REWARDS } from "./dailyBonusStorage";
 
 export interface DailyBonusModalProps {
   open: boolean;
@@ -33,7 +34,7 @@ const FALLBACK_SPONSOR_AD = {
 
 /**
  * Modal 1: Daily Login Bonus
- * Displays daily streak tracker (10 BC standard, 50 BC on 3-day streak),
+ * Displays the Monday-Sunday login cycle (5/10/5/10/50/50/50 BC),
  * sleek static ad banner at top (dynamically synchronized with Admin Ad Inventory Manager),
  * and primary "Claim Reward" button that transitions directly to Modal 2.
  */
@@ -45,7 +46,7 @@ export function DailyBonusModal({
   onClaim,
   onClose,
 }: DailyBonusModalProps) {
-  const currentStep = Math.min(3, Math.max(1, streak));
+  const currentStep = ((new Date().getDay() + 6) % 7) + 1;
 
   // Dynamically subscribe to admin creative inventory for Modal 1
   const activeCreative = useActiveAdCreative("popup_1_daily_login");
@@ -133,7 +134,7 @@ export function DailyBonusModal({
             </div>
             {isStreakBonus ? (
               <div className="absolute -bottom-1 flex items-center gap-0.5 rounded-full bg-orange-600 px-2 py-0.5 text-[10px] font-bold text-white shadow">
-                <Flame className="size-3 fill-amber-300" /> 3-DAY STREAK
+                <Flame className="size-3 fill-amber-300" /> WEEKEND 50 BC
               </div>
             ) : null}
           </div>
@@ -147,57 +148,24 @@ export function DailyBonusModal({
             </DialogDescription>
           </DialogHeader>
 
-          {/* 3-DAY STREAK PROGRESS TRACKER */}
+          {/* 7-DAY LOGIN CYCLE */}
           <div className="my-4 rounded-2xl border border-border/80 bg-secondary/30 p-3.5 sm:p-4">
             <div className="mb-2.5 flex items-center justify-between text-xs">
-              <span className="font-semibold text-muted-foreground">Login Streak</span>
-              <span className="font-bold text-primary">Day {currentStep} of 3</span>
+              <span className="font-semibold text-muted-foreground">7-Day Login Rewards</span>
+              <span className="font-bold text-primary">Day {currentStep} of 7</span>
             </div>
-
-            <div className="grid grid-cols-3 gap-2">
-              {[1, 2, 3].map((step) => {
-                const isCompleted = streak >= step;
-                const isCurrent = currentStep === step;
-                const isMilestone = step === 3;
-
-                return (
-                  <div
-                    key={step}
-                    className={`relative flex flex-col items-center justify-center rounded-xl border p-2.5 transition-all ${
-                      isMilestone
-                        ? isCompleted
-                          ? "border-orange-500 bg-orange-500/15 text-orange-500 shadow-xs"
-                          : "border-orange-500/40 bg-orange-500/5 text-orange-500/70"
-                        : isCompleted
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border/60 bg-card/60 text-muted-foreground"
-                    }`}
-                  >
-                    <span className="text-[10px] font-medium uppercase tracking-wider">
-                      Day {step}
-                    </span>
-
-                    <span className="my-1 font-display text-base font-black">
-                      {step === 3 ? "50 BC" : "10 BC"}
-                    </span>
-
-                    <div className="mt-0.5 flex size-4 items-center justify-center rounded-full text-[10px]">
-                      {isCompleted ? (
-                        <Check className="size-3 stroke-[3]" />
-                      ) : (
-                        <span className="size-1.5 rounded-full bg-muted-foreground/40" />
-                      )}
-                    </div>
-                  </div>
-                );
+            <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
+              {WEEKLY_LOGIN_REWARDS.map((amount, index) => {
+                const active = index + 1 === currentStep;
+                const labels = ["MON","TUE","WED","THU","FRI","SAT","SUN"];
+                return <div key={labels[index]} className={`rounded-xl border p-2 text-center ${active ? "border-primary bg-primary/15 shadow-sm" : "border-border/60 bg-card/60"}`}>
+                  <span className="block text-[9px] font-bold text-muted-foreground">{labels[index]}</span>
+                  <span className="my-1 block text-xs font-black">{amount} BC</span>
+                  {index + 1 < currentStep ? <Check className="mx-auto size-3 text-primary"/> : active ? <Sparkles className="mx-auto size-3 text-primary"/> : <span className="block h-3"/>}
+                </div>;
               })}
             </div>
-
-            <p className="mt-2.5 text-[11px] text-muted-foreground">
-              {streak >= 3
-                ? "🔥 3-day milestone unlocked! You earned the 50 BC jackpot!"
-                : "Keep checking in daily to reach your 3-day 50 BC mega bonus!"}
-            </p>
+            <p className="mt-2.5 text-[11px] text-muted-foreground">Monday resets the cycle. Friday-Sunday are 50 BC days.</p>
           </div>
 
           {/* REWARD SUMMARY BADGE */}
@@ -219,7 +187,7 @@ export function DailyBonusModal({
           </Button>
 
           <p className="mt-2 text-[10px] text-muted-foreground">
-            Coins are credited instantly to your cross-platform Circle Panda wallet.
+            Coins are credited instantly to your Circle Panda wallet. The weekly cycle resets every Monday.
           </p>
         </div>
       </DialogContent>

@@ -22,10 +22,18 @@ export interface BonusConfig {
 }
 
 export const DEFAULT_BONUS_CONFIG: BonusConfig = {
-  standardReward: 10,
+  standardReward: 5,
   streakReward: 50,
   streakMilestone: 3,
 };
+
+export const WEEKLY_LOGIN_REWARDS = [5, 10, 5, 10, 50, 50, 50] as const;
+
+export function getWeeklyReward(date: Date = new Date()): number {
+  // Monday is the weekly reset. JS Sunday=0, so convert to Monday=0.
+  const mondayIndex = (date.getDay() + 6) % 7;
+  return WEEKLY_LOGIN_REWARDS[mondayIndex] ?? 5;
+}
 
 const BONUS_CONFIG_KEY = "cp_admin_bonus_config";
 
@@ -135,11 +143,10 @@ export function evaluateLoginStreak(): StreakState {
   }
 
   const config = getBonusConfig();
-  const isThreeDayStreak = calculatedStreak >= config.streakMilestone;
-  const rewardAmount = isThreeDayStreak ? config.streakReward : config.standardReward;
-  const daysToMilestone = isThreeDayStreak
-    ? 0
-    : Math.max(0, config.streakMilestone - calculatedStreak);
+  const weeklyReward = getWeeklyReward();
+  const isThreeDayStreak = weeklyReward === 50;
+  const rewardAmount = weeklyReward;
+  const daysToMilestone = isThreeDayStreak ? 0 : Math.max(0, 3 - calculatedStreak);
 
   const alreadyCompletedToday = completedDate === todayStr;
   const alreadyClaimedToday = claimedDate === todayStr;

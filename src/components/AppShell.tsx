@@ -31,7 +31,10 @@ const TABS = [
   { to: "/groups", label: "Groups", icon: Users },
 ] as const;
 
-const QUICK = [{ to: "/leaders", label: "Leaders", icon: Trophy }] as const;
+const QUICK = [
+  { to: "/leaders", label: "Leaders", icon: Trophy },
+  { to: "/confessions", label: "Confessions", icon: MessageSquare },
+] as const;
 
 /** Floating interactive widget positioned above the bottom navigation bar on the left */
 export function FloatingHotSeatWidget() {

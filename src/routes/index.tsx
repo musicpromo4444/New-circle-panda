@@ -34,6 +34,7 @@ export function FeedPage() {
 
   return (
     <AppShell title="Anonymous Feed" subtitle="Nobody knows it's you. Replies are public.">
+      <div className="mb-4"><StandardBannerAd variant="compact" index={0} /></div>
       <CrushTray />
       <form
         className="panda-panel mb-5 rounded-2xl p-4"
@@ -69,6 +70,7 @@ export function FeedPage() {
           </div>
         ))}
       </div>
+      <div className="mt-5"><StandardBannerAd variant="compact" index={1} /></div>
     </AppShell>
   );
 }

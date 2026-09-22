@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useStore } from "@/lib/store";
 import { DailyBonusModal } from "./DailyBonusModal";
-import { EngagementFeaturesModal } from "./EngagementFeaturesModal";
+import { WeeklyActivitiesModal } from "./WeeklyActivitiesModal";
 import {
   evaluateLoginStreak,
   markBonusClaimed,
@@ -28,7 +28,7 @@ export interface DailyModalSequenceProps {
 export function DailyModalSequence({ forceOpen = false }: DailyModalSequenceProps) {
   const { addCoins } = useStore();
 
-  // 0: none open, 1: Daily Bonus Modal, 2: Engagement Features Modal
+  // 0: none open, 1: Daily Bonus Modal, 2: Weekly Activities
   const [activeStep, setActiveStep] = useState<0 | 1 | 2>(0);
   const [streakState, setStreakState] = useState<StreakState | null>(null);
 
@@ -61,8 +61,8 @@ export function DailyModalSequence({ forceOpen = false }: DailyModalSequenceProp
 
     toast.success(`Claimed +${rewardAmount} BC! 🎉`, {
       description: isThreeDayStreak
-        ? "Awesome 3-day streak! 50 Virtual Coins added to your wallet."
-        : "10 Virtual Coins added to your wallet.",
+        ? "50 BC weekend reward added to your wallet."
+        : `${rewardAmount} BC added to your wallet.`,
     });
 
     // Immediately trigger Modal 2
@@ -96,8 +96,8 @@ export function DailyModalSequence({ forceOpen = false }: DailyModalSequenceProp
         onClose={handleCloseModal1}
       />
 
-      {/* Modal 2: Engagement Features */}
-      <EngagementFeaturesModal open={activeStep === 2} onClose={handleCloseModal2} />
+      {/* Modal 2: Weekly Activities */}
+      <WeeklyActivitiesModal open={activeStep === 2} onClose={handleCloseModal2} />
     </>
   );
 }
