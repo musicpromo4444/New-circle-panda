@@ -26,6 +26,7 @@ const RELATIONSHIP_TYPES = ["Monogamous", "Open relationship", "Polyamorous", "O
 const BODY_OPTIONS = ["Tall", "Short", "Average", "Big Hips", "Small Hips", "Curvy", "Broad Shoulders", "Slim", "Athletic", "Plus Size", "Large Bust", "Small Bust", "Moderate Bust"];
 const HAIR_STYLE_OPTIONS = ["Long Hair", "Medium Hair", "Short Hair", "Bald", "Braids", "Locs", "Curly", "Straight", "Wavy"];
 const HAIR_COLOR_OPTIONS = ["Black", "Dark Brown", "Brown", "Blonde", "Red", "Grey", "Fair/Light"];
+const LOOKING_FOR_OPTIONS = [...BODY_OPTIONS, ...HAIR_STYLE_OPTIONS, ...HAIR_COLOR_OPTIONS];
 const SEXUAL_EXPERIENCE: SexualExperience[] = [
   "Virgin",
   "Novice",
@@ -244,7 +245,7 @@ export function RegisterDatingModal({
             <div>
               <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">What I'm Looking For</label>
               <p className="mb-2 text-[11px] text-muted-foreground">Choose the same appearance options you want in a match.</p>
-              <div className="flex flex-wrap gap-1.5">{BODY_OPTIONS.map((x) => <button key={x} type="button" onClick={() => toggleOption(setLookingFor, x)} className={"rounded-full px-3 py-1.5 text-xs font-medium " + (lookingFor.includes(x) ? "bg-[var(--dating)] text-white" : "border border-border bg-secondary/60 text-muted-foreground")}>{x}</button>)}</div>
+              <div className="flex flex-wrap gap-1.5">{LOOKING_FOR_OPTIONS.map((x) => <button key={x} type="button" onClick={() => toggleOption(setLookingFor, x)} className={"rounded-full px-3 py-1.5 text-xs font-medium " + (lookingFor.includes(x) ? "bg-[var(--dating)] text-white" : "border border-border bg-secondary/60 text-muted-foreground")}>{x}</button>)}</div>
             </div>
           </div>
 
