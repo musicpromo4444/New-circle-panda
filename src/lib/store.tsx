@@ -294,6 +294,7 @@ export function weightedSpin(slices: SpinPrize[]): SpinPrize {
 }
 
 export const DM_UNLOCK_COST = 1;
+export const DATING_FREE_WINDOW_MS = 72 * 60 * 60 * 1000;
 
 /** Panda tiers earned through reputation score. */
 export type Tier = { min: number; name: string; emoji: string; blurb: string };
@@ -1199,14 +1200,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const sendMessage = useCallback((threadId: string, body: string) => {
     let blocked = false;
+    let freeDating = false;
     setState((s) => {
-      if (s.coins < 1) {
+      const thread = s.threads.find((t) => t.id === threadId);
+      freeDating =
+        thread?.kind === "dating" &&
+        typeof thread.startedAt === "number" &&
+        Date.now() - thread.startedAt < DATING_FREE_WINDOW_MS;
+
+      if (!freeDating && s.coins < 1) {
         blocked = true;
         return s;
       }
+
       return {
         ...s,
-        coins: s.coins - 1,
+        coins: freeDating ? s.coins : s.coins - 1,
         threads: s.threads.map((t) =>
           t.id === threadId
             ? { ...t, messages: [...t.messages, { id: rid(), body, at: Date.now(), mine: true }] }
@@ -1215,9 +1224,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       };
     });
     if (blocked) {
-      toast.error("Not enough Panda Coins", { description: "Each message costs 1 BC." });
+      toast.error("Not enough Panda Coins", { description: "Each message costs 1 BC after the 72-hour dating window." });
+    } else if (freeDating) {
+      toast("Dating chat is free 💗", { description: "Free for the first 72 hours." });
     } else {
-      toast("−1 BC spent 🪙", { description: "Message delivered anonymously." });
+      toast("−1 BC spent 🪙", { description: "Dating chat is now on the normal 1 BC message rate." });
     }
   }, []);
 
