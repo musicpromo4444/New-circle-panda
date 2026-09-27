@@ -71,14 +71,25 @@ export type PandaEvent = {
   rsvp: boolean;
 };
 
+export type SexualExperience = "Virgin" | "Novice" | "Expert" | "Good in Bed" | "Pro" | "Prefer Not to Say";
 export type DatingProfile = {
+  /** Registration-locked identity fields. These cannot be edited after first registration. */
   name: string;
   age: number;
-  vibe: string;
+  location: string;
   emoji: string;
+  gender: string;
+  sexuality: string;
+  datingIntent: string;
+  relationshipType: string;
+  sexualExperience: SexualExperience;
+  vibe: string;
   bio: string;
   interests: string[];
-  location: string;
+  likes: string[];
+  dislikes: string[];
+  lookingFor: string[];
+  promptAnswers: string[];
   registeredAt: number;
 };
 
