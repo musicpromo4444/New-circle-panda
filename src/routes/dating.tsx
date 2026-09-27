@@ -6,6 +6,7 @@ import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { PlayableVideoAd } from "@/components/ads/PlayableVideoAd";
+import { BannerAd } from "@/components/ads/BannerAd";
 import { useAdPreloader } from "@/components/ads/useAdPreloader";
 import { VIDEO_ADS } from "@/components/ads/AdTypes";
 import { RegisterDatingModal } from "@/components/dating/RegisterDatingModal";
@@ -237,10 +238,16 @@ function DatingPage() {
               </div>
             </article>
 
-            {/* Short, playable video advertisement (5-10 seconds, skippable) after every sequence of 5 user profiles */}
+            {/* Dating ad sequence: after every 5 cards — 1st playable, 2nd banner, 3rd playable, then banners. */}
             {(idx + 1) % 5 === 0 ? (
               <div className="my-2 sm:col-span-2">
-                <PlayableVideoAd index={Math.floor(idx / 5)} />
+                {(() => {
+                  const placement = Math.floor(idx / 5);
+                  if (placement === 0 || placement === 2) {
+                    return <PlayableVideoAd index={placement} variant="grid-item" />;
+                  }
+                  return <BannerAd index={placement} />;
+                })()}
               </div>
             ) : null}
           </div>
