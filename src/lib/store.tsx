@@ -726,8 +726,6 @@ const initialState: State = {
       name: "Moonlit Panda",
       kind: "wcw",
       emoji: "🌙",
-      avatarUrl:
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80",
       blurb: "Reads books at 2am, replies at 2pm.",
       votes: 148,
     },
@@ -736,8 +734,6 @@ const initialState: State = {
       name: "Cocoa Cub",
       kind: "wcw",
       emoji: "🍫",
-      avatarUrl:
-        "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&auto=format&fit=crop&q=80",
       blurb: "Bakes for strangers. Plant hoarder.",
       votes: 121,
     },
@@ -746,8 +742,6 @@ const initialState: State = {
       name: "Quiet Storm",
       kind: "wcw",
       emoji: "⛈️",
-      avatarUrl:
-        "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&auto=format&fit=crop&q=80",
       blurb: "Loud in group chats, shy in person.",
       votes: 88,
     },
@@ -756,8 +750,6 @@ const initialState: State = {
       name: "Starlight Panda",
       kind: "wcw",
       emoji: "✨",
-      avatarUrl:
-        "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=800&auto=format&fit=crop&q=80",
       blurb: "Astrophysics nerd with impeccable playlist taste.",
       votes: 79,
     },
@@ -766,8 +758,6 @@ const initialState: State = {
       name: "Honey Amber",
       kind: "wcw",
       emoji: "🍯",
-      avatarUrl:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&auto=format&fit=crop&q=80",
       blurb: "Always knows where the good matcha is hiding.",
       votes: 72,
     },
@@ -776,8 +766,6 @@ const initialState: State = {
       name: "Velvet Whisper",
       kind: "wcw",
       emoji: "🎨",
-      avatarUrl:
-        "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=800&auto=format&fit=crop&q=80",
       blurb: "Paints city sunsets from rooftops. Secret poet.",
       votes: 65,
     },
@@ -786,8 +774,6 @@ const initialState: State = {
       name: "Emerald Fern",
       kind: "wcw",
       emoji: "🌿",
-      avatarUrl:
-        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&auto=format&fit=crop&q=80",
       blurb: "Smiles at every dog on the Lekki trail.",
       votes: 54,
     },
@@ -796,8 +782,6 @@ const initialState: State = {
       name: "Bamboo Bandit",
       kind: "mcm",
       emoji: "🎋",
-      avatarUrl:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=80",
       blurb: "Runs marathons to avoid small talk.",
       votes: 133,
     },
@@ -806,8 +790,6 @@ const initialState: State = {
       name: "Paper Panda",
       kind: "mcm",
       emoji: "📄",
-      avatarUrl:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&auto=format&fit=crop&q=80",
       blurb: "Writes the confessions everyone quotes.",
       votes: 97,
     },
@@ -816,8 +798,6 @@ const initialState: State = {
       name: "Silent Sprout",
       kind: "mcm",
       emoji: "🌱",
-      avatarUrl:
-        "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=800&auto=format&fit=crop&q=80",
       blurb: "New in town, already a legend.",
       votes: 61,
     },
@@ -826,8 +806,6 @@ const initialState: State = {
       name: "Midnight Architect",
       kind: "mcm",
       emoji: "📐",
-      avatarUrl:
-        "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=800&auto=format&fit=crop&q=80",
       blurb: "Designs bridges by day, beats by night.",
       votes: 58,
     },
@@ -836,8 +814,6 @@ const initialState: State = {
       name: "Solar Flare",
       kind: "mcm",
       emoji: "☀️",
-      avatarUrl:
-        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&auto=format&fit=crop&q=80",
       blurb: "Brings energy to every silent room.",
       votes: 49,
     },
@@ -846,8 +822,6 @@ const initialState: State = {
       name: "Echo Wave",
       kind: "mcm",
       emoji: "🌊",
-      avatarUrl:
-        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=800&auto=format&fit=crop&q=80",
       blurb: "Surfs, makes sourdough, talks to no one before 10 AM.",
       votes: 42,
     },
@@ -856,8 +830,6 @@ const initialState: State = {
       name: "Cedar Wolf",
       kind: "mcm",
       emoji: "🐺",
-      avatarUrl:
-        "https://images.unsplash.com/photo-1513956589380-bad6acb9b9d4?w=800&auto=format&fit=crop&q=80",
       blurb: "Campfire storyteller and amateur astronomer.",
       votes: 36,
     },
