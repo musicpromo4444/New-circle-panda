@@ -50,6 +50,7 @@ export function DailyActivityGate({ open, onClose }: DailyActivityGateProps) {
 
   useEffect(() => {
     if (!open) return;
+    if (!config.enabled) { onClose(); return; }
     setMessage(""); setFinished(false); setWheelResult(null); setCardPicks([]);
     setCupStage("prize"); setBoxStage("pick"); setTargetTime(30); setTargetRound(false);
     setTargets([]); setPuzzlePieces([0,1,2,3,4,5,6,7,8]); setSlots(["🐼","⭐","🪙"]);
@@ -98,6 +99,7 @@ export function DailyActivityGate({ open, onClose }: DailyActivityGateProps) {
           {cupStage === "shuffle" ? <div className="animate-pulse py-10 text-4xl">🐼 🥤 🥤 🥤</div> : null}
           {cupStage === "pick" ? <div className="grid grid-cols-3 gap-3">{[1,2,3].map((c)=><button key={c} onClick={()=>setCupStage("failed")} className="rounded-2xl border p-8 text-4xl">🥤</button>)}</div> : null}
           {cupStage === "failed" ? <><p className="font-bold">Failed.</p><Button onClick={()=>requestAd(()=>{setCupStage("prize");setMessage("")})} className="w-full">Try Again</Button><Button variant="ghost" onClick={close} className="w-full">Give Up</Button></> : null}
+          <StandardBannerAd variant="compact" />
         </div>;
 
       case "cards":
@@ -123,7 +125,7 @@ export function DailyActivityGate({ open, onClose }: DailyActivityGateProps) {
         return <div className="space-y-4 text-center"><StandardBannerAd variant="compact" /><div className="grid grid-cols-3 gap-2">{slots.map((s,i)=><div key={i} className="grid aspect-square place-items-center rounded-2xl border bg-secondary text-4xl">{s}</div>)}</div><Button onClick={()=>{const next=[0,1,2].map(()=>config.slotSymbols[Math.floor(Math.random()*config.slotSymbols.length)]||"🐼");setSlots(next);if(next[0]===next[1]&&next[1]===next[2])reward(30)}} className="w-full">Spin</Button><Button variant="outline" onClick={()=>requestAd(()=>{})} className="w-full">Play Again</Button><Button variant="ghost" onClick={close} className="w-full">Give Up</Button><StandardBannerAd variant="compact" /></div>;
 
       case "mystery-box":
-        return <div className="space-y-4 text-center"><StandardBannerAd variant="compact" /><p className="font-bold">Choose 1 of 3 pixel boxes.</p><div className="grid grid-cols-3 gap-3">{[0,1,2].map(i=><button key={i} disabled={boxStage!=="pick"} onClick={()=>{setBoxStage("opening");window.setTimeout(()=>{const n=[1,2,5][i];requestAd(()=>{reward(n);setMessage("You got "+n+" BC.");setBoxStage("result")})},900)}} className="grid aspect-square place-items-center rounded-2xl border bg-secondary text-5xl">📦</button>)}</div>{boxStage==="opening"?<p className="animate-pulse font-bold">Opening…</p>:null}{boxStage==="result"?<><p className="font-bold">{message}</p><Button onClick={()=>requestAd(()=>{setBoxStage("pick");setMessage("")})} className="w-full">Try Again</Button><Button variant="ghost" onClick={close} className="w-full">Give Up</Button></>:null}</div>;
+        return <div className="space-y-4 text-center"><p className="font-bold">Choose 1 of 3 pixel boxes.</p><div className="grid grid-cols-3 gap-3">{[0,1,2].map(i=><button key={i} disabled={boxStage!=="pick"} onClick={()=>{setBoxStage("opening");window.setTimeout(()=>{const n=[1,2,5][i];requestAd(()=>{reward(n);setMessage("You got "+n+" BC.");setBoxStage("result")})},900)}} className="grid aspect-square place-items-center rounded-2xl border bg-secondary text-5xl">📦</button>)}</div>{boxStage==="opening"?<p className="animate-pulse font-bold">Opening…</p>:null}{boxStage==="result"?<><p className="font-bold">{message}</p><Button onClick={()=>requestAd(()=>{setBoxStage("pick");setMessage("")})} className="w-full">Try Again</Button><Button variant="ghost" onClick={close} className="w-full">Give Up</Button></>:null}<StandardBannerAd variant="compact" /></div>;
 
       case "panda-target":
         return <div className="space-y-4 text-center"><div className="flex justify-between text-xs font-bold"><span>30-second arena</span><span>{targetTime}s</span></div>{!targetRound?<Button onClick={()=>{setTargetRound(true);setTargetTime(30);setTargets([20,50,75])}} className="w-full">Start Target Arena</Button>:<div className="relative h-64 overflow-hidden rounded-3xl border bg-secondary/30">{targets.map((pos,i)=>{const amount=i===2?1000:[10,20][i%2];return <button key={i} onClick={()=>{reward(amount);setMessage(amount>=1000?"Blink target!":amount+" BC added.")}} className="absolute rounded-full border-2 p-2 text-[10px] font-black" style={{left:pos+"%",top:((i*23)+10)+"%"}}>{amount} BC</button>})}</div>}{message?<p className="font-bold">{message}</p>:null}</div>;
