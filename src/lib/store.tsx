@@ -112,6 +112,8 @@ export const DAY_MS = 24 * 60 * 60 * 1000;
 
 /** WCW / MCM weekly crush voting. */
 export type CrushKind = "wcw" | "mcm";
+export type CrushReaction = "panda" | "love" | "like" | "thunder" | "rain";
+export type CrushReactionCounts = Record<CrushReaction, number>;
 export type Nominee = {
   id: string;
   name: string;
@@ -121,6 +123,9 @@ export type Nominee = {
   blurb: string;
   votes: number;
   mine?: boolean;
+  reactions?: CrushReactionCounts;
+  submittedAt?: number;
+  shared?: number;
 };
 export type Spotlight = { kind: CrushKind; name: string; wonAt: number };
 
@@ -391,6 +396,9 @@ type State = {
   isVip: boolean;
   vipExpiresAt: number | null;
   datingProfile: DatingProfile | null;
+  crushReactions: Record<string, CrushReactionCounts>;
+  crushReactionUsers: Record<string, string[]>;
+  crushShares: Record<string, number>;
 };
 
 const now = Date.now();
@@ -403,6 +411,9 @@ const initialState: State = {
   isVip: false,
   vipExpiresAt: null,
   datingProfile: null,
+  crushReactions: {},
+  crushReactionUsers: {},
+  crushShares: {},
   posts: [
     {
       id: "post-1",
@@ -1312,6 +1323,35 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     toast.success(`+${amount} BC added 🪙`, { description: reason ?? "Free coins claimed." });
   }, []);
 
+  const reactToNominee = useCallback((id: string, reaction: CrushReaction) => {
+    setState((s) => {
+      const users = s.crushReactionUsers[id] ?? [];
+      if (users.includes(`${ME_ID}:${reaction}`)) return s;
+      const current = s.crushReactions[id] ?? { panda: 0, love: 0, like: 0, thunder: 0, rain: 0 };
+      return {
+        ...s,
+        crushReactionUsers: { ...s.crushReactionUsers, [id]: [...users, `${ME_ID}:${reaction}`] },
+        crushReactions: { ...s.crushReactions, [id]: { ...current, [reaction]: current[reaction] + 1 } },
+      };
+    });
+  }, []);
+
+  const shareNominee = useCallback((id: string) => {
+    setState((s) => ({ ...s, crushShares: { ...s.crushShares, [id]: (s.crushShares[id] ?? 0) + 1 } }));
+  }, []);
+
+  const uploadCrushEntry = useCallback((name: string, kind: CrushKind, blurb: string, emoji: string) => {
+    const id = rid();
+    setState((s) => ({
+      ...s,
+      nominees: [...s.nominees, {
+        id, name, kind, emoji, blurb, votes: 0, mine: true, submittedAt: Date.now(),
+        reactions: { panda: 0, love: 0, like: 0, thunder: 0, rain: 0 }, shared: 0,
+      }],
+    }));
+    return id;
+  }, []);
+
   const nominate = useCallback((name: string, kind: CrushKind, blurb: string, emoji: string) => {
     let ok = true;
     setState((s) => {
@@ -1602,6 +1642,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       openPaidDm,
       addCoins,
       nominate,
+      uploadCrushEntry,
+      reactToNominee,
+      shareNominee,
       voteFor,
       freeVotesLeft: Math.max(
         0,
@@ -1644,6 +1687,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       openPaidDm,
       addCoins,
       nominate,
+      uploadCrushEntry,
+      reactToNominee,
+      shareNominee,
       voteFor,
       toggleRsvp,
       buyTicket,
