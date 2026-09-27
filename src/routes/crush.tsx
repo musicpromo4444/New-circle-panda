@@ -175,7 +175,7 @@ function CrushPage() {
         <div className="panda-panel mx-auto max-w-sm rounded-2xl p-8 text-center text-sm text-muted-foreground">WCW & MCM is currently paused by Admin.</div>
       ) : !released ? (
         <div className="panda-panel mx-auto max-w-sm rounded-2xl p-8 text-center text-sm text-muted-foreground">
-          {kind.toUpperCase()} opens {kind === "mcm" ? "Monday" : "Wednesday"} at 10:00 AM local time.
+          {kind.toUpperCase()} opens {kind === "mcm" ? "Monday" : "Wednesday"} at {String(kind === "mcm" ? mcmRelease.getHours() : wcwRelease.getHours()).padStart(2, "0")}:00 local time.
         </div>
       ) : showInlineAd ? (
         <div className="flex flex-col items-center">
@@ -335,7 +335,7 @@ function CrushPage() {
       <Dialog open={openNominate} onOpenChange={setOpenNominate}>
         <DialogContent className="sm:max-w-sm">
           <DialogTitle className="font-display text-xl">
-            Nominate for {kind.toUpperCase()}
+            Upload for {kind.toUpperCase()}
           </DialogTitle>
           <DialogDescription>
             Upload your Panda entry. Your built-in Panda avatar is used — no profile photo is required.
