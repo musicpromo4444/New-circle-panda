@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useStore } from "@/lib/store";
 import { DailyBonusModal } from "./DailyBonusModal";
-import { EngagementFeaturesModal } from "./EngagementFeaturesModal";
+import { DailyActivityGate } from "./DailyActivityGate";
 import {
   evaluateLoginStreak,
   markBonusClaimed,
@@ -28,7 +28,7 @@ export interface DailyModalSequenceProps {
 export function DailyModalSequence({ forceOpen = false }: DailyModalSequenceProps) {
   const { addCoins } = useStore();
 
-  // 0: none open, 1: Daily Bonus Modal, 2: Engagement Features Modal
+  // 0: none open, 1: Daily Bonus Modal, 2: Daily Activity Gate
   const [activeStep, setActiveStep] = useState<0 | 1 | 2>(0);
   const [streakState, setStreakState] = useState<StreakState | null>(null);
 
@@ -96,8 +96,8 @@ export function DailyModalSequence({ forceOpen = false }: DailyModalSequenceProp
         onClose={handleCloseModal1}
       />
 
-      {/* Modal 2: Engagement Features */}
-      <EngagementFeaturesModal open={activeStep === 2} onClose={handleCloseModal2} />
+      {/* Modal 2: Admin-selected Daily Activity */}
+      <DailyActivityGate open={activeStep === 2} onClose={handleCloseModal2} />
     </>
   );
 }
