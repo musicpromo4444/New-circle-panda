@@ -97,6 +97,7 @@ export interface EngagementConfig {
   quizRewardBc: number;
   // External Quiz & Survey API Integrations
   externalSurvey: ExternalSurveyConfig;
+  dailyActivities: import("@/components/daily-bonus/dailyActivities").DailyActivityConfig;
 }
 
 export interface AdminActivityLog {
