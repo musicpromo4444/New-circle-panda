@@ -27,6 +27,7 @@ import {
 } from "@/components/admin";
 import { useCurrentUser } from "@/lib/auth";
 import { AdminDailyActivitiesManager } from "@/components/admin/AdminDailyActivitiesManager";
+import { AdminCrushManager } from "@/components/admin/AdminCrushManager";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -54,7 +55,7 @@ export const Route = createFileRoute("/admin")({
   },
 });
 
-type AdminTab = "overview" | "users" | "pricing" | "monetization" | "engagement" | "daily-activities" | "audit";
+type AdminTab = "overview" | "users" | "pricing" | "monetization" | "engagement" | "daily-activities" | "wcw-mcm" | "audit";
 
 function AdminDashboardPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
@@ -90,6 +91,7 @@ function AdminDashboardPage() {
       { id: "monetization", label: "Ad & Monetization", icon: Megaphone },
       { id: "engagement", label: "Engagement & Events", icon: Sparkles },
       { id: "daily-activities", label: "Daily Activities", icon: Sparkles },
+      { id: "wcw-mcm", label: "WCW & MCM", icon: Radio },
       { id: "audit", label: "Audit Logs", icon: History },
     ];
 
