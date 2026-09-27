@@ -23,6 +23,9 @@ const GENDERS = ["Woman", "Man", "Non-binary", "Prefer not to say"];
 const SEXUALITIES = ["Straight", "Gay", "Lesbian", "Bisexual", "Pansexual", "Asexual", "Queer", "Prefer not to say"];
 const DATING_INTENTS = ["Long-term relationship", "Short-term relationship", "Casual dating", "Marriage", "Still figuring it out"];
 const RELATIONSHIP_TYPES = ["Monogamous", "Open relationship", "Polyamorous", "Open to discussing", "Prefer not to say"];
+const BODY_OPTIONS = ["Tall", "Short", "Average", "Big Hips", "Small Hips", "Curvy", "Broad Shoulders", "Slim", "Athletic", "Plus Size", "Large Bust", "Small Bust", "Moderate Bust"];
+const HAIR_STYLE_OPTIONS = ["Long Hair", "Medium Hair", "Short Hair", "Bald", "Braids", "Locs", "Curly", "Straight", "Wavy"];
+const HAIR_COLOR_OPTIONS = ["Black", "Dark Brown", "Brown", "Blonde", "Red", "Grey", "Fair/Light"];
 const SEXUAL_EXPERIENCE: SexualExperience[] = [
   "Virgin",
   "Novice",
@@ -53,6 +56,9 @@ export function RegisterDatingModal({
   const [sexualExperience, setSexualExperience] = useState<SexualExperience>(
     datingProfile?.sexualExperience ?? "Prefer Not to Say",
   );
+  const [bodyType, setBodyType] = useState<string[]>(datingProfile?.bodyType ?? []);
+  const [hairStyle, setHairStyle] = useState<string[]>(datingProfile?.hairStyle ?? []);
+  const [hairColor, setHairColor] = useState<string[]>(datingProfile?.hairColor ?? []);
   const [vibe, setVibe] = useState(datingProfile?.vibe ?? "");
   const [bio, setBio] = useState(datingProfile?.bio ?? "");
   const [interests, setInterests] = useState<string[]>(
@@ -75,6 +81,9 @@ export function RegisterDatingModal({
     setDatingIntent(datingProfile.datingIntent);
     setRelationshipType(datingProfile.relationshipType);
     setSexualExperience(datingProfile.sexualExperience);
+    setBodyType(datingProfile.bodyType ?? []);
+    setHairStyle(datingProfile.hairStyle ?? []);
+    setHairColor(datingProfile.hairColor ?? []);
     setVibe(datingProfile.vibe);
     setBio(datingProfile.bio);
     setInterests(datingProfile.interests);
@@ -84,6 +93,10 @@ export function RegisterDatingModal({
     setPromptOne(datingProfile.promptAnswers?.[0] ?? "");
     setPromptTwo(datingProfile.promptAnswers?.[1] ?? "");
   }, [datingProfile]);
+
+  const toggleOption = (setter: React.Dispatch<React.SetStateAction<string[]>>, value: string) => {
+    setter((prev) => (prev.includes(value) ? prev.filter((x) => x !== value) : [...prev, value]));
+  };
 
   const toggleInterest = (tag: string) => {
     setInterests((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
@@ -113,6 +126,9 @@ export function RegisterDatingModal({
       datingIntent,
       relationshipType,
       sexualExperience,
+      bodyType,
+      hairStyle,
+      hairColor,
       vibe: vibe.trim() || "Mysterious panda",
       bio: bio.trim(),
       interests: interests.length > 0 ? interests : ["Late walks", "Memes"],
@@ -209,6 +225,27 @@ export function RegisterDatingModal({
               {SEXUAL_EXPERIENCE.map((x) => <option key={x}>{x}</option>)}
             </select>
             <p className="mt-1 text-[11px] text-muted-foreground">Optional dating information. Choose “Prefer Not to Say” to keep it private.</p>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">My Body & Appearance</label>
+              <p className="mb-2 text-[11px] text-muted-foreground">Select everything that describes you.</p>
+              <div className="flex flex-wrap gap-1.5">{BODY_OPTIONS.map((x) => <button key={x} type="button" onClick={() => toggleOption(setBodyType, x)} className={"rounded-full px-3 py-1.5 text-xs font-medium " + (bodyType.includes(x) ? "bg-[var(--dating)] text-white" : "border border-border bg-secondary/60 text-muted-foreground")}>{x}</button>)}</div>
+            </div>
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">Hair Style</label>
+              <div className="flex flex-wrap gap-1.5">{HAIR_STYLE_OPTIONS.map((x) => <button key={x} type="button" onClick={() => toggleOption(setHairStyle, x)} className={"rounded-full px-3 py-1.5 text-xs font-medium " + (hairStyle.includes(x) ? "bg-[var(--dating)] text-white" : "border border-border bg-secondary/60 text-muted-foreground")}>{x}</button>)}</div>
+            </div>
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">Hair Color</label>
+              <div className="flex flex-wrap gap-1.5">{HAIR_COLOR_OPTIONS.map((x) => <button key={x} type="button" onClick={() => toggleOption(setHairColor, x)} className={"rounded-full px-3 py-1.5 text-xs font-medium " + (hairColor.includes(x) ? "bg-[var(--dating)] text-white" : "border border-border bg-secondary/60 text-muted-foreground")}>{x}</button>)}</div>
+            </div>
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">What I'm Looking For</label>
+              <p className="mb-2 text-[11px] text-muted-foreground">Choose the same appearance options you want in a match.</p>
+              <div className="flex flex-wrap gap-1.5">{BODY_OPTIONS.map((x) => <button key={x} type="button" onClick={() => toggleOption(setLookingFor, x)} className={"rounded-full px-3 py-1.5 text-xs font-medium " + (lookingFor.includes(x) ? "bg-[var(--dating)] text-white" : "border border-border bg-secondary/60 text-muted-foreground")}>{x}</button>)}</div>
+            </div>
           </div>
 
           <div>
