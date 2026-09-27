@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Crown, Heart, Sparkles, Timer, Trophy, X } from "lucide-react";
+import { Crown, Heart, Sparkles, Timer, Trophy, X, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import {
   NOMINATION_COST,
   WINNER_REWARD,
   type CrushKind,
+  type CrushReaction,
 } from "@/lib/store";
 
 export const Route = createFileRoute("/crush")({
@@ -51,7 +52,7 @@ function countdown(until: number) {
 }
 
 function CrushPage() {
-  const { nominees, voteFor, nominate, freeVotesLeft, weekEndsAt, spotlights, coins } = useStore();
+  const { nominees, voteFor, uploadCrushEntry, reactToNominee, shareNominee, freeVotesLeft, weekEndsAt, spotlights, coins } = useStore();
   const [kind, setKind] = useState<CrushKind>("wcw");
   const [index, setIndex] = useState(0);
   const [swipe, setSwipe] = useState<"left" | "right" | null>(null);
@@ -190,7 +191,21 @@ function CrushPage() {
             </Button>
           </div>
 
-          {/* Discreet secondary utility actions */}
+          {/* Reactions + sharing */}
+          <div className="mt-3 w-full max-w-sm rounded-2xl border border-border/70 bg-secondary/40 p-3">
+            <div className="mb-2 text-[11px] font-semibold text-muted-foreground">React to {card.name}</div>
+            <div className="flex items-center justify-between gap-1">
+              {([["panda","🐼"],["love","❤️"],["like","👍"],["thunder","⚡"],["rain","🌧️"]] as [CrushReaction,string][]).map(([reaction, icon]) => (
+                <button key={reaction} type="button" onClick={() => reactToNominee(card.id, reaction)} className="grid min-h-10 min-w-10 place-items-center rounded-xl bg-background/70 text-lg active:scale-95">
+                  {icon}
+                </button>
+              ))}
+              <button type="button" onClick={() => { shareNominee(card.id); toast.success("Share counted"); }} className="grid min-h-10 min-w-10 place-items-center rounded-xl bg-primary/10 text-primary active:scale-95" aria-label="Share">
+                <Share2 className="size-4" />
+              </button>
+            </div>
+          </div>
+\n          {/* Discreet secondary utility actions */}
           <div className="mt-3 flex w-full max-w-sm items-center justify-between px-2 text-xs text-muted-foreground">
             <button
               type="button"
@@ -212,7 +227,7 @@ function CrushPage() {
               }}
               className="flex items-center gap-1 transition-colors hover:text-foreground"
             >
-              <Sparkles className="size-3.5 text-primary" /> Nominate ({NOMINATION_COST} BC)
+              <Sparkles className="size-3.5 text-primary" /> Upload
             </button>
           </div>
         </div>
@@ -305,7 +320,7 @@ function CrushPage() {
             Nominate for {kind.toUpperCase()}
           </DialogTitle>
           <DialogDescription>
-            Costs {NOMINATION_COST} BC. Use your own handle to opt in anonymously.
+            Upload your Panda entry. Your built-in Panda avatar is used — no profile photo is required.
           </DialogDescription>
 
           <div className="space-y-3">
@@ -342,7 +357,7 @@ function CrushPage() {
                 submit();
               }}
             >
-              Submit nomination · {NOMINATION_COST} BC
+              Upload to {kind.toUpperCase()}
             </Button>
             <Button
               variant="ghost"
