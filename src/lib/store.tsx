@@ -1433,6 +1433,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         return {
           ...s,
           coins: iWon ? s.coins + WINNER_REWARD : s.coins,
+          isVip: iWon ? true : s.isVip,
+          vipExpiresAt: iWon ? Math.max(s.vipExpiresAt ?? 0, Date.now()) + 7 * DAY_MS : s.vipExpiresAt,
           spotlights: [...winners, ...s.spotlights].slice(0, 8),
           weekEndsAt: Date.now() + WEEK_MS,
           nominees: s.nominees.map((n) => ({ ...n, votes: Math.round(n.votes / 4) })),
