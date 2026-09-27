@@ -6,6 +6,7 @@ import {
   type EngagementConfig,
   type ExternalSurveyConfig,
 } from "@/components/admin/adminTypes";
+import { DEFAULT_DAILY_ACTIVITY_CONFIG } from "@/components/daily-bonus/dailyActivities";
 
 export const STORAGE_KEY_AD_CONFIG = "cp_admin_ad_config";
 export const STORAGE_KEY_ENGAGEMENT = "cp_admin_engagement_config";
@@ -163,6 +164,7 @@ export const DEFAULT_ENGAGEMENT_CONFIG: EngagementConfig = {
   quizCorrectIndex: 1,
   quizRewardBc: 15,
   externalSurvey: DEFAULT_EXTERNAL_SURVEY,
+  dailyActivities: DEFAULT_DAILY_ACTIVITY_CONFIG,
 };
 
 export function getLiveAdPlacementConfig(): AdPlacementConfig {
