@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { crushSupabase } from "@/lib/crushSupabase";
 
 export type CrushAdminConfig = {
   enabled: boolean;
@@ -45,6 +46,7 @@ export function AdminCrushManager() {
 
   const save = () => {
     window.localStorage.setItem(CRUSH_ADMIN_STORAGE_KEY, JSON.stringify(config));
+    void crushSupabase.from("crush_admin_config").upsert({ id: true, enabled: config.enabled, mcm_release_hour: config.mcmReleaseHour, wcw_release_hour: config.wcwReleaseHour, ad_every_swipes: config.adEverySwipes, ad_same_frame: config.adSameFrame, updated_at: new Date().toISOString() });
     window.dispatchEvent(new Event("circle-panda-crush-config"));
     toast.success("WCW & MCM settings saved");
   };
