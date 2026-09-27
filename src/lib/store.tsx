@@ -83,12 +83,15 @@ export type DatingProfile = {
   datingIntent: string;
   relationshipType: string;
   sexualExperience: SexualExperience;
+  bodyType: string[];
+  lookingFor: string[];
+  hairStyle: string[];
+  hairColor: string[];
   vibe: string;
   bio: string;
   interests: string[];
   likes: string[];
   dislikes: string[];
-  lookingFor: string[];
   promptAnswers: string[];
   registeredAt: number;
 };
