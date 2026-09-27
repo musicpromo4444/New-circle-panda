@@ -25,6 +25,7 @@ import {
   type PricingConfig,
   type VipPlan,
 } from "./adminTypes";
+import { DEFAULT_DAILY_ACTIVITY_CONFIG, type DailyActivityConfig } from "@/components/daily-bonus/dailyActivities";
 import {
   DEFAULT_PRICING_CONFIG,
   getPricingConfig,
@@ -537,6 +538,15 @@ export function useAdminStore() {
     toast.success("Engagement configurations saved and applied");
   };
 
+  const updateDailyActivities = (partial: Partial<DailyActivityConfig>) => {
+    setEngagementConfig((prev) => ({
+      ...prev,
+      dailyActivities: { ...DEFAULT_DAILY_ACTIVITY_CONFIG, ...prev.dailyActivities, ...partial },
+    }));
+    addLog("UPDATE_DAILY_ACTIVITIES", "Updated the 11-activity daily library and day assignments");
+    toast.success("Daily Activities settings saved and applied");
+  };
+
   // Update External Survey Configuration
   const updateExternalSurveyConfig = (partial: Partial<ExternalSurveyConfig>) => {
     setEngagementConfig((prev) => {
@@ -741,6 +751,7 @@ export function useAdminStore() {
     toggleCreativeStatus,
     toggleSponsorPartner,
     updateEngagementConfig,
+    updateDailyActivities,
     updateExternalSurveyConfig,
     updateCoinPackage,
     toggleCoinPackage,
