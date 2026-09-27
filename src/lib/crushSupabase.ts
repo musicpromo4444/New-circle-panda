@@ -72,8 +72,3 @@ export async function shareCrushRemote(nomineeId: string) {
 
 export type CrushRemoteClient = SupabaseClient;
 
-export async function finalizeCrushWeekRemote(weekStart: string) {
-  await ensureCrushUser();
-  const { data } = await crushSupabase.rpc("finalize_crush_week", { p_week_start: weekStart });
-  return data ?? null;
-}
