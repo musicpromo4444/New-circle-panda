@@ -78,11 +78,11 @@ export function RegisterDatingModal({
     setVibe(datingProfile.vibe);
     setBio(datingProfile.bio);
     setInterests(datingProfile.interests);
-    setLikes(datingProfile.likes.join(", "));
-    setDislikes(datingProfile.dislikes.join(", "));
-    setLookingFor(datingProfile.lookingFor.join(", "));
-    setPromptOne(datingProfile.promptAnswers[0] ?? "");
-    setPromptTwo(datingProfile.promptAnswers[1] ?? "");
+    setLikes((datingProfile.likes ?? []).join(", "));
+    setDislikes((datingProfile.dislikes ?? []).join(", "));
+    setLookingFor((datingProfile.lookingFor ?? []).join(", "));
+    setPromptOne(datingProfile.promptAnswers?.[0] ?? "");
+    setPromptTwo(datingProfile.promptAnswers?.[1] ?? "");
   }, [datingProfile]);
 
   const toggleInterest = (tag: string) => {
