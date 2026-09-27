@@ -392,17 +392,6 @@ function CrushPage() {
             >
               Upload to {kind.toUpperCase()}
             </Button>
-            <Button
-              variant="ghost"
-              className="w-full"
-              onClick={() => {
-                if (nominate("You (anonymous)", kind, "Opted in anonymously.", "🐼")) {
-                  setOpenNominate(false);
-                }
-              }}
-            >
-              Opt myself in anonymously
-            </Button>
           </div>
         </DialogContent>
       </Dialog>
