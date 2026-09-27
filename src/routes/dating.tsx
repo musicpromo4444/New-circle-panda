@@ -114,6 +114,11 @@ export const Route = createFileRoute("/dating")({
   component: DatingPage,
 });
 
+const appearanceMatchCount = (profile: Match, preferences: string[]) =>
+  preferences.filter((preference) =>
+    [...(profile.bodyType ?? []), ...(profile.hairStyle ?? []), ...(profile.hairColor ?? [])].includes(preference),
+  ).length;
+
 function DatingPage() {
   const { startDatingChat, threads, datingProfile } = useStore();
   const navigate = useNavigate();
@@ -205,6 +210,11 @@ function DatingPage() {
                     <span className="text-sm font-normal text-muted-foreground">{m.age}</span>
                   </span>
                   <span className="mt-1 block text-sm text-muted-foreground">{m.vibe}</span>
+                {datingProfile && idx > 0 && m.bodyType?.length ? (
+                  <span className="mt-2 inline-flex rounded-full bg-[var(--dating)]/10 px-2.5 py-1 text-[11px] font-semibold text-[var(--dating)]">
+                    {appearanceMatchCount(m, datingProfile.lookingFor)} matching preference{appearanceMatchCount(m, datingProfile.lookingFor) === 1 ? "" : "s"}
+                  </span>
+                ) : null}
                 </span>
               </button>
               <div className="p-4 pt-3">
