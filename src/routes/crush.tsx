@@ -14,7 +14,6 @@ import {
   useStore,
   EXTRA_VOTE_COST,
   FREE_DAILY_VOTES,
-  NOMINATION_COST,
   WINNER_REWARD,
   type CrushKind,
   type CrushReaction,
@@ -52,7 +51,7 @@ function countdown(until: number) {
 }
 
 function CrushPage() {
-  const { nominees, voteFor, uploadCrushEntry, reactToNominee, shareNominee, freeVotesLeft, weekEndsAt, spotlights } = useStore();
+  const { nominees, voteFor, uploadCrushEntry, reactToNominee, shareNominee, freeVotesLeft, weekEndsAt, spotlights, crushReactions, crushShares } = useStore();
   const [kind, setKind] = useState<CrushKind>("wcw");
   const [index, setIndex] = useState(0);
   const [swipe, setSwipe] = useState<"left" | "right" | null>(null);
@@ -240,6 +239,10 @@ function CrushPage() {
               <button type="button" onClick={() => { shareNominee(card.id); toast.success("Share counted"); }} className="grid min-h-10 min-w-10 place-items-center rounded-xl bg-primary/10 text-primary active:scale-95" aria-label="Share">
                 <Share2 className="size-4" />
               </button>
+            </div>
+            <div className="mt-2 flex items-center justify-between text-[10px] text-muted-foreground">
+              <span>{Object.values(crushReactions[card.id] ?? { panda: 0, love: 0, like: 0, thunder: 0, rain: 0 }).reduce((a, b) => a + b, 0)} reactions</span>
+              <span>{crushShares[card.id] ?? 0} shares</span>
             </div>
           </div>
 \n          {/* Discreet secondary utility actions */}
