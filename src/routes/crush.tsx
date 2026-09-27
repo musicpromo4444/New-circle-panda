@@ -10,7 +10,7 @@ import { PlayableVideoAd } from "@/components/ads/PlayableVideoAd";
 import { useAdPreloader } from "@/components/ads/useAdPreloader";
 import { VIDEO_ADS } from "@/components/ads/AdTypes";
 import { cn } from "@/lib/utils";
-import { loadCrushRemote, uploadCrushRemote, voteCrushRemote, reactCrushRemote, shareCrushRemote, finalizeCrushWeekRemote } from "@/lib/crushSupabase";
+import { loadCrushRemote, uploadCrushRemote, voteCrushRemote, reactCrushRemote, shareCrushRemote } from "@/lib/crushSupabase";
 import {
   useStore,
   EXTRA_VOTE_COST,
