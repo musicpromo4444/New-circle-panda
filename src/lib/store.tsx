@@ -925,7 +925,25 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(KEY);
-      if (raw) setState({ ...initialState, ...(JSON.parse(raw) as Partial<State>) });
+      if (raw) {
+        const saved = JSON.parse(raw) as Partial<State>;
+        const savedDating = saved.datingProfile;
+        const datingProfile = savedDating
+          ? {
+              ...savedDating,
+              gender: savedDating.gender ?? "Prefer not to say",
+              sexuality: savedDating.sexuality ?? "Prefer not to say",
+              datingIntent: savedDating.datingIntent ?? "Still figuring it out",
+              relationshipType: savedDating.relationshipType ?? "Prefer not to say",
+              sexualExperience: savedDating.sexualExperience ?? "Prefer Not to Say",
+              likes: savedDating.likes ?? [],
+              dislikes: savedDating.dislikes ?? [],
+              lookingFor: savedDating.lookingFor ?? [],
+              promptAnswers: savedDating.promptAnswers ?? [],
+            }
+          : null;
+        setState({ ...initialState, ...saved, datingProfile });
+      }
     } catch {
       /* ignore */
     }
