@@ -26,6 +26,7 @@ import {
   useAdminStore,
 } from "@/components/admin";
 import { useCurrentUser } from "@/lib/auth";
+import { AdminDailyActivitiesManager } from "@/components/admin/AdminDailyActivitiesManager";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -53,7 +54,7 @@ export const Route = createFileRoute("/admin")({
   },
 });
 
-type AdminTab = "overview" | "users" | "pricing" | "monetization" | "engagement" | "audit";
+type AdminTab = "overview" | "users" | "pricing" | "monetization" | "engagement" | "daily-activities" | "audit";
 
 function AdminDashboardPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
@@ -75,6 +76,7 @@ function AdminDashboardPage() {
     toggleCreativeStatus,
     toggleSponsorPartner,
     updateEngagementConfig,
+    updateDailyActivities,
     updateExternalSurveyConfig,
     exportUsersCSV,
     resetToDefaultData,
@@ -87,6 +89,7 @@ function AdminDashboardPage() {
       { id: "pricing", label: "Coin Store & VIP Pricing", icon: Coins },
       { id: "monetization", label: "Ad & Monetization", icon: Megaphone },
       { id: "engagement", label: "Engagement & Events", icon: Sparkles },
+      { id: "daily-activities", label: "Daily Activities", icon: Sparkles },
       { id: "audit", label: "Audit Logs", icon: History },
     ];
 
@@ -229,6 +232,11 @@ function AdminDashboardPage() {
             onUpdateConfig={updateEngagementConfig}
             onUpdateExternalSurveyConfig={updateExternalSurveyConfig}
           />
+        ) : null}
+
+        {/* DAILY ACTIVITIES LIBRARY */}
+        {activeTab === "daily-activities" ? (
+          <AdminDailyActivitiesManager config={engagementConfig.dailyActivities} onUpdate={updateDailyActivities} />
         ) : null}
 
         {/* TAB 5: AUDIT LOGS */}
