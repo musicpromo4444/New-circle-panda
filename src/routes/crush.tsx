@@ -10,6 +10,7 @@ import { PlayableVideoAd } from "@/components/ads/PlayableVideoAd";
 import { useAdPreloader } from "@/components/ads/useAdPreloader";
 import { VIDEO_ADS } from "@/components/ads/AdTypes";
 import { cn } from "@/lib/utils";
+import { loadCrushRemote, uploadCrushRemote, voteCrushRemote, reactCrushRemote, shareCrushRemote } from "@/lib/crushSupabase";
 import {
   useStore,
   EXTRA_VOTE_COST,
@@ -63,6 +64,8 @@ function CrushPage() {
   const [form, setForm] = useState({ name: "", blurb: "", emoji: "🐼" });
   const [crushEnabled, setCrushEnabled] = useState(true);
   const [, setTick] = useState(0);
+  const [remoteEntries, setRemoteEntries] = useState<any[] | null>(null);
+  const [remoteConfig, setRemoteConfig] = useState<any | null>(null);
 
   // Pre-cache video ad units
   useAdPreloader({ videoUrls: VIDEO_ADS.map((ad) => ad.videoUrl) });
@@ -76,6 +79,14 @@ function CrushPage() {
       } catch { setCrushEnabled(true); }
     };
     sync();
+    void loadCrushRemote().then((remote) => {
+      if (!remote) return;
+      setRemoteEntries(remote.nominees.map((n: any) => ({
+        id: n.id, name: n.display_name, kind: n.kind, emoji: n.emoji || "🐼", blurb: n.blurb || "",
+        votes: remote.votes.filter((v: any) => v.nominee_id === n.id).length,
+      })));
+      setRemoteConfig(remote.config ?? null);
+    });
     window.addEventListener("circle-panda-crush-config", sync);
     return () => {
       clearInterval(i);
@@ -93,8 +104,8 @@ function CrushPage() {
     let wcwHour = 10;
     try {
       const saved = JSON.parse(window.localStorage.getItem("circle-panda-crush-admin-v1") || "null");
-      mcmHour = Number(saved?.mcmReleaseHour ?? 10);
-      wcwHour = Number(saved?.wcwReleaseHour ?? 10);
+      mcmHour = Number(remoteConfig?.mcm_release_hour ?? saved?.mcmReleaseHour ?? 10);
+      wcwHour = Number(remoteConfig?.wcw_release_hour ?? saved?.wcwReleaseHour ?? 10);
     } catch {}
     monday.setHours(target === "mcm" ? mcmHour : wcwHour, 0, 0, 0);
     if (target === "wcw") monday.setDate(monday.getDate() + 2);
@@ -105,7 +116,8 @@ function CrushPage() {
   const wcwRelease = scheduleRelease("wcw");
   const released = Date.now() >= (kind === "mcm" ? mcmRelease.getTime() : wcwRelease.getTime());
 
-  const pool = nominees.filter((n) => n.kind === kind);
+  const activeEntries = remoteEntries?.length ? remoteEntries : nominees;
+  const pool = activeEntries.filter((n) => n.kind === kind);
   const ranked = [...pool].sort((a, b) => b.votes - a.votes);
   const card = pool[index % Math.max(pool.length, 1)] ?? null;
 
@@ -119,7 +131,8 @@ function CrushPage() {
       setIndex((v) => v + 1);
 
       // Sponsored content occupies the exact same Snapchat-style picture frame.
-      if (nextCount > 0 && nextCount % 5 === 0) {
+      const adEvery = Number(remoteConfig?.ad_every_swipes ?? 5);
+      if (nextCount > 0 && nextCount % adEvery === 0) {
         setVideoAdIndex(Math.floor(nextCount / 5) - 1);
         setShowInlineAd(true);
       }
@@ -129,6 +142,7 @@ function CrushPage() {
   const vote = () => {
     if (!card) return;
     voteFor(card.id);
+    void voteCrushRemote(card.id);
     advance("right");
   };
 
@@ -141,6 +155,7 @@ function CrushPage() {
       form.emoji,
     );
     if (ok) {
+      void uploadCrushRemote(form.name.trim(), kind, form.blurb.trim() || "Uploaded anonymously.", form.emoji);
       setOpenNominate(false);
       setForm({ name: "", blurb: "", emoji: "🐼" });
     }
@@ -239,11 +254,11 @@ function CrushPage() {
             <div className="mb-2 text-[11px] font-semibold text-muted-foreground">React to {card.name}</div>
             <div className="flex items-center justify-between gap-1">
               {([["panda","🐼"],["love","❤️"],["like","👍"],["thunder","⚡"],["rain","🌧️"]] as [CrushReaction,string][]).map(([reaction, icon]) => (
-                <button key={reaction} type="button" onClick={() => reactToNominee(card.id, reaction)} className="grid min-h-10 min-w-10 place-items-center rounded-xl bg-background/70 text-lg active:scale-95">
+                <button key={reaction} type="button" onClick={() => { reactToNominee(card.id, reaction); void reactCrushRemote(card.id, reaction); }} className="grid min-h-10 min-w-10 place-items-center rounded-xl bg-background/70 text-lg active:scale-95">
                   {icon}
                 </button>
               ))}
-              <button type="button" onClick={() => { shareNominee(card.id); toast.success("Share counted"); }} className="grid min-h-10 min-w-10 place-items-center rounded-xl bg-primary/10 text-primary active:scale-95" aria-label="Share">
+              <button type="button" onClick={() => { shareNominee(card.id); void shareCrushRemote(card.id); toast.success("Share counted"); }} className="grid min-h-10 min-w-10 place-items-center rounded-xl bg-primary/10 text-primary active:scale-95" aria-label="Share">
                 <Share2 className="size-4" />
               </button>
             </div>
