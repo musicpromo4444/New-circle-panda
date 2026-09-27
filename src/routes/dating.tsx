@@ -24,6 +24,9 @@ type Match = {
   datingIntent?: string;
   relationshipType?: string;
   sexualExperience?: string;
+  bodyType?: string[];
+  hairStyle?: string[];
+  hairColor?: string[];
   likes?: string[];
   dislikes?: string[];
   lookingFor?: string[];
@@ -145,6 +148,9 @@ function DatingPage() {
           datingIntent: datingProfile.datingIntent,
           relationshipType: datingProfile.relationshipType,
           sexualExperience: datingProfile.sexualExperience,
+          bodyType: datingProfile.bodyType,
+          hairStyle: datingProfile.hairStyle,
+          hairColor: datingProfile.hairColor,
           likes: datingProfile.likes,
           dislikes: datingProfile.dislikes,
           lookingFor: datingProfile.lookingFor,
@@ -264,6 +270,24 @@ function DatingPage() {
                   {openMatch.relationshipType ? <div className="rounded-xl bg-secondary/60 p-3"><span className="text-muted-foreground">Relationship</span><div className="mt-1 font-semibold">{openMatch.relationshipType}</div></div> : null}
                   {openMatch.sexualExperience ? <div className="rounded-xl bg-secondary/60 p-3"><span className="text-muted-foreground">Sexual Experience</span><div className="mt-1 font-semibold">{openMatch.sexualExperience}</div></div> : null}
                 </div>
+
+                {openMatch.bodyType?.length ? (
+                  <div className="mt-4">
+                    <p className="mb-2 text-xs font-semibold text-muted-foreground">My Body & Appearance</p>
+                    <div className="flex flex-wrap gap-2">{openMatch.bodyType.map((x) => <span key={x} className="rounded-full border border-[var(--dating)]/30 bg-[var(--dating)]/10 px-3 py-1 text-xs">{x}</span>)}</div>
+                  </div>
+                ) : null}
+                {openMatch.hairStyle?.length || openMatch.hairColor?.length ? (
+                  <div className="mt-3 text-sm">
+                    <span className="font-semibold">Hair:</span> {[...(openMatch.hairStyle ?? []), ...(openMatch.hairColor ?? [])].join(", ")}
+                  </div>
+                ) : null}
+                {openMatch.lookingFor?.length ? (
+                  <div className="mt-4">
+                    <p className="mb-2 text-xs font-semibold text-muted-foreground">Looking For</p>
+                    <div className="flex flex-wrap gap-2">{openMatch.lookingFor.map((x) => <span key={x} className={"rounded-full border px-3 py-1 text-xs " + (openMatch.bodyType?.includes(x) ? "border-[var(--dating)] bg-[var(--dating)]/10 font-semibold text-[var(--dating)]" : "border-border bg-secondary/50")}>{x}{openMatch.bodyType?.includes(x) ? " ✓ Match" : ""}</span>)}</div>
+                  </div>
+                ) : null}
 
                 {openMatch.likes?.length || openMatch.dislikes?.length || openMatch.lookingFor?.length ? (
                   <div className="mt-4 space-y-2 text-sm">
