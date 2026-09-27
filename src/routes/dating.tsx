@@ -19,6 +19,15 @@ type Match = {
   bio: string;
   interests: string[];
   location: string;
+  gender?: string;
+  sexuality?: string;
+  datingIntent?: string;
+  relationshipType?: string;
+  sexualExperience?: string;
+  likes?: string[];
+  dislikes?: string[];
+  lookingFor?: string[];
+  promptAnswers?: string[];
 };
 
 const MATCHES: Match[] = [
@@ -131,6 +140,15 @@ function DatingPage() {
           bio: datingProfile.bio,
           interests: datingProfile.interests,
           location: datingProfile.location,
+          gender: datingProfile.gender,
+          sexuality: datingProfile.sexuality,
+          datingIntent: datingProfile.datingIntent,
+          relationshipType: datingProfile.relationshipType,
+          sexualExperience: datingProfile.sexualExperience,
+          likes: datingProfile.likes,
+          dislikes: datingProfile.dislikes,
+          lookingFor: datingProfile.lookingFor,
+          promptAnswers: datingProfile.promptAnswers,
         },
         ...MATCHES,
       ]
@@ -214,8 +232,8 @@ function DatingPage() {
       </div>
 
       <p className="mt-5 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-        <MessageCircle className="size-3.5" /> Dating chats never expire, but every message costs 1
-        BC.
+        <MessageCircle className="size-3.5" /> Dating chat is free for the first 72 hours. After 72 hours,
+        normal 1 BC messaging rules apply.
       </p>
 
       {/* Dating Profile Registration & Edit Modal */}
@@ -238,6 +256,33 @@ function DatingPage() {
                 <DialogDescription className="mt-1">{openMatch.vibe}</DialogDescription>
 
                 <p className="mt-4 text-[15px] leading-relaxed">{openMatch.bio}</p>
+
+                <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
+                  {openMatch.gender ? <div className="rounded-xl bg-secondary/60 p-3"><span className="text-muted-foreground">Gender</span><div className="mt-1 font-semibold">{openMatch.gender}</div></div> : null}
+                  {openMatch.sexuality ? <div className="rounded-xl bg-secondary/60 p-3"><span className="text-muted-foreground">Sexuality</span><div className="mt-1 font-semibold">{openMatch.sexuality}</div></div> : null}
+                  {openMatch.datingIntent ? <div className="rounded-xl bg-secondary/60 p-3"><span className="text-muted-foreground">Looking for</span><div className="mt-1 font-semibold">{openMatch.datingIntent}</div></div> : null}
+                  {openMatch.relationshipType ? <div className="rounded-xl bg-secondary/60 p-3"><span className="text-muted-foreground">Relationship</span><div className="mt-1 font-semibold">{openMatch.relationshipType}</div></div> : null}
+                  {openMatch.sexualExperience ? <div className="rounded-xl bg-secondary/60 p-3"><span className="text-muted-foreground">Sexual Experience</span><div className="mt-1 font-semibold">{openMatch.sexualExperience}</div></div> : null}
+                </div>
+
+                {openMatch.likes?.length || openMatch.dislikes?.length || openMatch.lookingFor?.length ? (
+                  <div className="mt-4 space-y-2 text-sm">
+                    {openMatch.likes?.length ? <p><span className="font-semibold">Likes:</span> {openMatch.likes.join(", ")}</p> : null}
+                    {openMatch.dislikes?.length ? <p><span className="font-semibold">Dislikes:</span> {openMatch.dislikes.join(", ")}</p> : null}
+                    {openMatch.lookingFor?.length ? <p><span className="font-semibold">Looking for:</span> {openMatch.lookingFor.join(", ")}</p> : null}
+                  </div>
+                ) : null}
+
+                {openMatch.promptAnswers?.length ? (
+                  <div className="mt-4 space-y-2">
+                    {openMatch.promptAnswers.map((answer, i) => (
+                      <div key={answer} className="rounded-xl border bg-secondary/40 p-3 text-sm">
+                        <span className="text-xs text-muted-foreground">{i === 0 ? "My ideal first date" : "A green flag about me"}</span>
+                        <p className="mt-1">{answer}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : null
 
                 <div className="mt-4 flex flex-wrap gap-2">
                   {openMatch.interests.map((i) => (
