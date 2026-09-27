@@ -52,16 +52,17 @@ function countdown(until: number) {
 }
 
 function CrushPage() {
-  const { nominees, voteFor, uploadCrushEntry, reactToNominee, shareNominee, freeVotesLeft, weekEndsAt, spotlights, coins } = useStore();
+  const { nominees, voteFor, uploadCrushEntry, reactToNominee, shareNominee, freeVotesLeft, weekEndsAt, spotlights } = useStore();
   const [kind, setKind] = useState<CrushKind>("wcw");
   const [index, setIndex] = useState(0);
   const [swipe, setSwipe] = useState<"left" | "right" | null>(null);
   const [swipeCount, setSwipeCount] = useState(0);
-  const [showVideoAdModal, setShowVideoAdModal] = useState(false);
+  const [showInlineAd, setShowInlineAd] = useState(false);
   const [videoAdIndex, setVideoAdIndex] = useState(0);
   const [openNominate, setOpenNominate] = useState(false);
   const [openLeaderboard, setOpenLeaderboard] = useState(false);
   const [form, setForm] = useState({ name: "", blurb: "", emoji: "🐼" });
+  const [crushEnabled, setCrushEnabled] = useState(true);
   const [, setTick] = useState(0);
 
   // Pre-cache video ad units
@@ -69,8 +70,34 @@ function CrushPage() {
 
   useEffect(() => {
     const i = setInterval(() => setTick((v) => v + 1), 1000);
-    return () => clearInterval(i);
+    const sync = () => {
+      try {
+        const saved = JSON.parse(window.localStorage.getItem("circle-panda-crush-admin-v1") || "null");
+        setCrushEnabled(saved?.enabled !== false);
+      } catch { setCrushEnabled(true); }
+    };
+    sync();
+    window.addEventListener("circle-panda-crush-config", sync);
+    return () => {
+      clearInterval(i);
+      window.removeEventListener("circle-panda-crush-config", sync);
+    };
   }, []);
+
+  const scheduleRelease = (target: CrushKind) => {
+    const now = new Date();
+    const day = now.getDay();
+    const monday = new Date(now);
+    const daysFromMonday = (day + 6) % 7;
+    monday.setDate(now.getDate() - daysFromMonday);
+    monday.setHours(10, 0, 0, 0);
+    if (target === "wcw") monday.setDate(monday.getDate() + 2);
+    return monday;
+  };
+
+  const mcmRelease = scheduleRelease("mcm");
+  const wcwRelease = scheduleRelease("wcw");
+  const released = Date.now() >= (kind === "mcm" ? mcmRelease.getTime() : wcwRelease.getTime());
 
   const pool = nominees.filter((n) => n.kind === kind);
   const ranked = [...pool].sort((a, b) => b.votes - a.votes);
@@ -85,10 +112,10 @@ function CrushPage() {
       setSwipe(null);
       setIndex((v) => v + 1);
 
-      // Trigger playable video advertisement after every sequence of 5 picture swipes
+      // Sponsored content occupies the exact same Snapchat-style picture frame.
       if (nextCount > 0 && nextCount % 5 === 0) {
         setVideoAdIndex(Math.floor(nextCount / 5) - 1);
-        setShowVideoAdModal(true);
+        setShowInlineAd(true);
       }
     }, 220);
   };
@@ -101,10 +128,10 @@ function CrushPage() {
 
   const submit = () => {
     if (!form.name.trim()) return;
-    const ok = nominate(
+    const ok = !!uploadCrushEntry(
       form.name.trim(),
       kind,
-      form.blurb.trim() || "Nominated anonymously.",
+      form.blurb.trim() || "Uploaded anonymously.",
       form.emoji,
     );
     if (ok) {
@@ -138,7 +165,26 @@ function CrushPage() {
       </div>
 
       {/* Main Immersive Picture Container */}
-      {card ? (
+      {!crushEnabled ? (
+        <div className="panda-panel mx-auto max-w-sm rounded-2xl p-8 text-center text-sm text-muted-foreground">WCW & MCM is currently paused by Admin.</div>
+      ) : !released ? (
+        <div className="panda-panel mx-auto max-w-sm rounded-2xl p-8 text-center text-sm text-muted-foreground">
+          {kind.toUpperCase()} opens {kind === "mcm" ? "Monday" : "Wednesday"} at 10:00 AM local time.
+        </div>
+      ) : showInlineAd ? (
+        <div className="flex flex-col items-center">
+          <div className="relative aspect-[3/4] w-full max-w-sm overflow-hidden rounded-3xl border border-border/40 bg-zinc-950 shadow-2xl sm:aspect-[4/5]">
+            <div className="absolute inset-0 flex flex-col">
+              <div className="flex items-center justify-between bg-black/70 px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-white">
+                <span>Sponsored</span><span>Ad</span>
+              </div>
+              <div className="min-h-0 flex-1 p-3 sm:p-4">
+                <PlayableVideoAd index={videoAdIndex} onSkipped={() => setShowInlineAd(false)} onComplete={() => setShowInlineAd(false)} />
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : card ? (
         <div className="flex flex-col items-center">
           <div
             className={cn(
@@ -150,18 +196,9 @@ function CrushPage() {
                   : "translate-x-0 rotate-0 opacity-100",
             )}
           >
-            {card.avatarUrl ? (
-              <img
-                src={card.avatarUrl}
-                alt={card.name}
-                className="pointer-events-none size-full select-none object-cover"
-                referrerPolicy="no-referrer"
-              />
-            ) : (
-              <div className="pointer-events-none grid size-full select-none place-items-center bg-gradient-to-b from-primary/25 via-primary/10 to-black">
-                <span className="text-8xl">{card.emoji}</span>
-              </div>
-            )}
+            <div className="pointer-events-none grid size-full select-none place-items-center bg-gradient-to-b from-primary/25 via-primary/10 to-black">
+              <span className="text-8xl">{card.emoji}</span>
+            </div>
 
             {/* Overlaid at bottom-left corner of the picture itself: User's Name ONLY */}
             <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-5 pt-24">
@@ -216,15 +253,7 @@ function CrushPage() {
             </button>
             <button
               type="button"
-              onClick={() => {
-                if (coins < NOMINATION_COST) {
-                  toast.error("Not enough Panda Coins", {
-                    description: `Nominating costs ${NOMINATION_COST} BC.`,
-                  });
-                  return;
-                }
-                setOpenNominate(true);
-              }}
+              onClick={() => setOpenNominate(true)}
               className="flex items-center gap-1 transition-colors hover:text-foreground"
             >
               <Sparkles className="size-3.5 text-primary" /> Upload
@@ -236,27 +265,6 @@ function CrushPage() {
           No nominees yet in this category.
         </div>
       )}
-
-      {/* Video Ad Modal after every 5 swipes */}
-      <Dialog open={showVideoAdModal} onOpenChange={setShowVideoAdModal}>
-        <DialogContent className="max-w-md overflow-hidden border-border/80 bg-black/95 p-0 text-white">
-          <div className="flex items-center justify-between border-b border-border/60 bg-secondary/80 p-3">
-            <span className="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-              <Sparkles className="size-3.5 text-amber-400" /> Sponsored Interstitial
-            </span>
-            <span className="text-[11px] text-muted-foreground">
-              Checkpoint ({swipeCount} swipes)
-            </span>
-          </div>
-          <div className="p-3 sm:p-4">
-            <PlayableVideoAd
-              index={videoAdIndex}
-              onSkipped={() => setShowVideoAdModal(false)}
-              onComplete={() => setShowVideoAdModal(false)}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* Leaderboard modal */}
       <Dialog open={openLeaderboard} onOpenChange={setOpenLeaderboard}>
