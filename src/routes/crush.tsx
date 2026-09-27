@@ -26,7 +26,7 @@ export const Route = createFileRoute("/crush")({
       {
         name: "description",
         content:
-          "Nominate anonymously for 5 BC, swipe through this week's Woman Crush Wednesday and Man Crush Monday nominees, and crown the Spotlight King and Queen.",
+          "Upload your Panda entry, swipe through this week's Woman Crush Wednesday and Man Crush Monday nominees, and crown the Spotlight King and Queen.",
       },
       { property: "og:title", content: "WCW & MCM Voting — Circle Panda" },
       {
@@ -89,7 +89,14 @@ function CrushPage() {
     const monday = new Date(now);
     const daysFromMonday = (day + 6) % 7;
     monday.setDate(now.getDate() - daysFromMonday);
-    monday.setHours(10, 0, 0, 0);
+    let mcmHour = 10;
+    let wcwHour = 10;
+    try {
+      const saved = JSON.parse(window.localStorage.getItem("circle-panda-crush-admin-v1") || "null");
+      mcmHour = Number(saved?.mcmReleaseHour ?? 10);
+      wcwHour = Number(saved?.wcwReleaseHour ?? 10);
+    } catch {}
+    monday.setHours(target === "mcm" ? mcmHour : wcwHour, 0, 0, 0);
     if (target === "wcw") monday.setDate(monday.getDate() + 2);
     return monday;
   };
@@ -245,7 +252,7 @@ function CrushPage() {
               <span>{crushShares[card.id] ?? 0} shares</span>
             </div>
           </div>
-\n          {/* Discreet secondary utility actions */}
+          {/* Discreet secondary utility actions */}
           <div className="mt-3 flex w-full max-w-sm items-center justify-between px-2 text-xs text-muted-foreground">
             <button
               type="button"
