@@ -47,6 +47,7 @@ import {
   type LiveChatMessage,
 } from "@/components/hotseat/LiveChatDrawer";
 import { ShareModal } from "@/components/hotseat/ShareModal";
+import { WaterBreakOverlay } from "@/components/break-lounge/WaterBreakOverlay";
 
 export const Route = createFileRoute("/hot-seat")({
   head: () => ({
