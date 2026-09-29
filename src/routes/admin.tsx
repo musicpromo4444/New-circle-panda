@@ -28,6 +28,7 @@ import {
 import { useCurrentUser } from "@/lib/auth";
 import { AdminDailyActivitiesManager } from "@/components/admin/AdminDailyActivitiesManager";
 import { AdminCrushManager } from "@/components/admin/AdminCrushManager";
+import { BreakLoungeAdmin } from "@/components/break-lounge/Giveaway";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -55,7 +56,7 @@ export const Route = createFileRoute("/admin")({
   },
 });
 
-type AdminTab = "overview" | "users" | "pricing" | "monetization" | "engagement" | "daily-activities" | "wcw-mcm" | "audit";
+type AdminTab = "overview" | "users" | "pricing" | "monetization" | "engagement" | "daily-activities" | "wcw-mcm" | "hot-seats" | "audit";
 
 function AdminDashboardPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
@@ -92,6 +93,7 @@ function AdminDashboardPage() {
       { id: "engagement", label: "Engagement & Events", icon: Sparkles },
       { id: "daily-activities", label: "Daily Activities", icon: Sparkles },
       { id: "wcw-mcm", label: "WCW & MCM", icon: Radio },
+      { id: "hot-seats", label: "Hot Seats", icon: Radio },
       { id: "audit", label: "Audit Logs", icon: History },
     ];
 
@@ -241,7 +243,7 @@ function AdminDashboardPage() {
           <AdminDailyActivitiesManager config={engagementConfig.dailyActivities} onUpdate={updateDailyActivities} />
         ) : null}
 
-        {/* TAB 5: AUDIT LOGS */}
+        {activeTab === "hot-seats" ? <BreakLoungeAdmin /> : null}\n\n        {/* TAB 5: AUDIT LOGS */}
         {activeTab === "audit" ? (
           <section className="space-y-4">
             <div className="flex flex-col gap-1">
