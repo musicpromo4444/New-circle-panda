@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
+import { supabase } from "@/lib/supabase";
 
 type Challenge = { id:string; title:string; description:string; buttonText:string; type:"survey"|"offer"|"action"|"video"; url:string; enabled:boolean };
 const initialChallenges:Challenge[]=[
