@@ -1,34 +1,33 @@
 import { useEffect, useMemo, useState } from "react";
-import { Clock3, ExternalLink, Gift, PauseCircle } from "lucide-react";
+import { ExternalLink, Gift, PauseCircle, Play, TrendingUp, Music2, Film } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/lib/supabase";
 
-type BreakState = {
- session?: { break_number:number; ends_at:string };
- current_item?: { starts_at:string; ends_at:string; duration_seconds:number; content_id:string };
- items?: Array<{sort_order:number;starts_at:string;ends_at:string;duration_seconds:number;content_id:string}>;
-};
+type BreakState={session?:{break_number:number;ends_at:string};current_item?:{starts_at:string;ends_at:string;duration_seconds:number;content_id:string}};
+type Content={title:string;description:string|null;content_type:string;media_url:string|null;action_url:string|null;config:any};
 
 export function WaterBreakOverlay(){
- const [state,setState]=useState<BreakState|null>(null);
- const [content,setContent]=useState<any>(null);
- const [now,setNow]=useState(Date.now());
- useEffect(()=>{const load=async()=>{const {data}=await supabase.rpc("get_active_water_break");setState(data&&data.session?data:null);if(data?.current_item?.content_id){const {data:c}=await supabase.from("hot_seat_break_content").select("title,description,content_type,media_url,action_url,config").eq("id",data.current_item.content_id).maybeSingle();setContent(c??null);}};void load();const poll=setInterval(load,3000);const tick=setInterval(()=>setNow(Date.now()),1000);return()=>{clearInterval(poll);clearInterval(tick)}},[]);
+ const [state,setState]=useState<BreakState|null>(null),[content,setContent]=useState<Content|null>(null),[now,setNow]=useState(Date.now());
+ const [investment,setInvestment]=useState({risk:"balanced",stake:"100",id:""}),[result,setResult]=useState<any>(null);
+ const [poll,setPoll]=useState<any>(null),[voted,setVoted]=useState(false),[error,setError]=useState("");
+ const load=async()=>{const {data}=await supabase.rpc("get_active_water_break");setState(data&&data.session?data:null);if(data?.current_item?.content_id){const {data:c}=await supabase.from("hot_seat_break_content").select("title,description,content_type,media_url,action_url,config").eq("id",data.current_item.content_id).maybeSingle();setContent(c??null);if(c?.content_type==="poll"){const {data:p}=await supabase.from("hot_seat_break_polls").select("id,title,question,options").eq("enabled",true).order("created_at",{ascending:false}).limit(1).maybeSingle();setPoll(p??null);}}else{setContent(null);setPoll(null);}};
+ useEffect(()=>{void load();const a=setInterval(load,3000),b=setInterval(()=>setNow(Date.now()),1000);return()=>{clearInterval(a);clearInterval(b)}},[]);
  const remaining=useMemo(()=>Math.max(0,Math.ceil(((state?.current_item?.ends_at?new Date(state.current_item.ends_at).getTime():0)-now)/1000)),[state,now]);
  if(!state?.session||!state.current_item)return null;
  const mins=Math.floor(remaining/60),secs=remaining%60;
- return <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/90 p-5 text-white backdrop-blur-md">
-   <Card className="w-full max-w-lg overflow-hidden border-white/10 bg-neutral-950 text-white shadow-2xl">
-    <CardContent className="p-0">
-      {content?.media_url?<div className="aspect-video w-full overflow-hidden bg-black"><img src={content.media_url} alt="" className="h-full w-full object-cover"/></div>:null}
-      <div className="space-y-5 p-6 text-center">
-       <div className="flex justify-center"><span className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-300"><PauseCircle className="size-4"/> Water Break {state.session.break_number}</span></div>
-       <div><h2 className="text-2xl font-bold">{content?.title??"Water Break"}</h2><p className="mt-2 text-sm text-neutral-400">{content?.description??"Hot Seat is paused while this event runs."}</p></div>
-       <div className="rounded-2xl border border-white/10 bg-white/5 p-5"><p className="text-xs uppercase tracking-[0.2em] text-neutral-500">Event ends in</p><p className="mt-2 font-mono text-4xl font-black tabular-nums">{String(mins).padStart(2,"0")}:{String(secs).padStart(2,"0")}</p></div>
-       {content?.content_type==="giveaway"?<Button className="w-full" onClick={()=>window.location.href="/giveaway"}><Gift className="mr-2 size-4"/>Open Giveaway</Button>:content?.action_url?<Button className="w-full" onClick={()=>window.open(content.action_url,"_blank","noopener,noreferrer")}><ExternalLink className="mr-2 size-4"/>Open Event</Button>:null}
-      </div>
-    </CardContent>
-   </Card>
- </div>;
+ const startInvestment=async()=>{setError("");setResult(null);const {data,error:e}=await supabase.rpc("start_break_investment",{p_content_id:state.current_item!.content_id,p_stake_bc:Number(investment.stake),p_risk:investment.risk});if(e){setError(e.message);return;}setInvestment(x=>({...x,id:data.id}));};
+ const resolveInvestment=async()=>{const {data,error:e}=await supabase.rpc("resolve_break_investment",{p_investment_id:investment.id});if(e){setError(e.message);return;}setResult(data);};
+ const vote=async(index:number)=>{if(!poll)return;setError("");const {error:e}=await supabase.rpc("vote_water_break_poll",{p_poll_id:poll.id,p_option_index:index});if(e){setError(e.message);return;}setVoted(true);};
+ const eventBody=()=>{
+  if(content?.content_type==="giveaway")return <Button className="w-full" onClick={()=>window.location.href="/giveaway"}><Gift className="mr-2 size-4"/>Open Giveaway</Button>;
+  if(content?.content_type==="investment")return <div className="space-y-3 text-left"><div className="grid grid-cols-3 gap-2">{[["safe","Safe +4%"],["balanced","Balanced +9%"],["bold","Bold +18%"]].map(([id,label])=><Button key={id} size="sm" variant={investment.risk===id?"default":"outline"} onClick={()=>setInvestment(x=>({...x,risk:id}))}>{label}</Button>)}</div><Input inputMode="numeric" value={investment.stake} onChange={e=>setInvestment(x=>({...x,stake:e.target.value}))} placeholder="BC stake"/>{!investment.id?<Button className="w-full" onClick={startInvestment} disabled={Number(investment.stake)<=0}><TrendingUp className="mr-2 size-4"/>Lock Investment</Button>:!result?<Button className="w-full" onClick={resolveInvestment}><Play className="mr-2 size-4"/>Reveal Result</Button>:<div className="rounded-xl border p-3 text-center font-bold">{result.won?"You won "+result.result_bc+" BC":"No return this round."}</div>}</div>;
+  if(content?.content_type==="poll")return <div className="space-y-2">{poll?<><p className="text-sm font-semibold">{poll.question}</p>{(poll.options??[]).map((o:any,i:number)=><Button key={i} className="w-full justify-start" variant={voted?"secondary":"outline"} disabled={voted} onClick={()=>vote(i)}>{String(o)}</Button>)}</>:<p className="text-sm text-neutral-400">Poll is being prepared.</p>}{error&&<p className="text-xs text-red-300">{error}</p>}</div>;
+  if(content?.content_type==="music"&&content.media_url)return <div className="space-y-3"><div className="flex items-center gap-2 text-sm font-semibold"><Music2 className="size-4"/>Music Time</div><audio controls autoPlay className="w-full" src={content.media_url}/>{content.action_url&&<Button className="w-full" onClick={()=>window.open(content.action_url!,"_blank","noopener,noreferrer")}>Open Music Source</Button>}</div>;
+  if(content?.content_type==="movie"&&content.media_url)return <div className="space-y-3"><div className="flex items-center gap-2 text-sm font-semibold"><Film className="size-4"/>Movie / Comedy</div><video controls autoPlay playsInline className="max-h-72 w-full rounded-xl" src={content.media_url}/>{content.action_url&&<Button className="w-full" onClick={()=>window.open(content.action_url!,"_blank","noopener,noreferrer")}>Open Source</Button>}</div>;
+  if(content?.content_type==="video"&&content.media_url)return <div className="space-y-3"><div className="flex items-center gap-2 text-sm font-semibold"><Play className="size-4"/>Sponsor Video</div><video controls autoPlay playsInline className="max-h-72 w-full rounded-xl" src={content.media_url}/>{content.action_url&&<Button className="w-full" onClick={()=>window.open(content.action_url!,"_blank","noopener,noreferrer")}>Sponsor Link</Button>}</div>;
+  return content?.action_url?<Button className="w-full" onClick={()=>window.open(content.action_url!,"_blank","noopener,noreferrer")}><ExternalLink className="mr-2 size-4"/>Open Event</Button>:null;
+ };
+ return <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/90 p-5 text-white backdrop-blur-md"><Card className="w-full max-w-lg border-white/10 bg-neutral-950 text-white shadow-2xl"><CardContent className="space-y-5 p-6"><div className="flex justify-center"><span className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-300"><PauseCircle className="size-4"/> Water Break {state.session.break_number}</span></div><div><h2 className="text-2xl font-bold">{content?.title??"Water Break"}</h2><p className="mt-2 text-sm text-neutral-400">{content?.description??"Hot Seat is paused while this event runs."}</p></div><div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center"><p className="text-xs uppercase tracking-[0.2em] text-neutral-500">Event ends in</p><p className="mt-1 font-mono text-3xl font-black tabular-nums">{String(mins).padStart(2,"0")}:{String(secs).padStart(2,"0")}</p></div>{eventBody()}{content?.content_type!=="poll"&&error&&<p className="text-xs text-red-300">{error}</p>}</CardContent></Card></div>;
 }
