@@ -120,25 +120,16 @@ export type Database = {
           id: number
           reset_day: string
           updated_at: string
-          released_at: string | null
-          notification_title: string | null
-          notification_body: string | null
         }
         Insert: {
           id?: number
           reset_day?: string
           updated_at?: string
-          released_at?: string | null
-          notification_title?: string | null
-          notification_body?: string | null
         }
         Update: {
           id?: number
           reset_day?: string
           updated_at?: string
-          released_at?: string | null
-          notification_title?: string | null
-          notification_body?: string | null
         }
         Relationships: []
       }
@@ -1646,6 +1637,9 @@ export type Database = {
           stage_type: string
           title: string
           updated_at: string
+          released_at: string | null
+          notification_title: string | null
+          notification_body: string | null
         }
         Insert: {
           action_url?: string | null
@@ -1661,6 +1655,9 @@ export type Database = {
           stage_type?: string
           title: string
           updated_at?: string
+          released_at?: string | null
+          notification_title?: string | null
+          notification_body?: string | null
         }
         Update: {
           action_url?: string | null
