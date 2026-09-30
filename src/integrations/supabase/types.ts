@@ -120,16 +120,25 @@ export type Database = {
           id: number
           reset_day: string
           updated_at: string
+          released_at: string | null
+          notification_title: string | null
+          notification_body: string | null
         }
         Insert: {
           id?: number
           reset_day?: string
           updated_at?: string
+          released_at?: string | null
+          notification_title?: string | null
+          notification_body?: string | null
         }
         Update: {
           id?: number
           reset_day?: string
           updated_at?: string
+          released_at?: string | null
+          notification_title?: string | null
+          notification_body?: string | null
         }
         Relationships: []
       }
@@ -5800,8 +5809,15 @@ export type Database = {
           p_stage_number?: number
           p_stage_type?: string
           p_title?: string
+          p_released_at?: string
+          p_notification_title?: string
+          p_notification_body?: string
         }
         Returns: string
+      }
+      cp_admin_release_reward_stage: {
+        Args: { p_stage_id: string }
+        Returns: Json
       }
       cp_admin_select_reward_winner: {
         Args: { p_qualification_id: string }
