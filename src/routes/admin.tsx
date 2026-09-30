@@ -248,7 +248,9 @@ function AdminDashboardPage() {
           <AdminDailyActivitiesManager config={engagementConfig.dailyActivities} onUpdate={updateDailyActivities} />
         ) : null}
 
-        {activeTab === "hot-seats" ? <div className="space-y-8"><HotSeatAdmin /><BreakLoungeAdmin /></div> : null}\n\n        {/* TAB 5: AUDIT LOGS */}
+        {activeTab === "hot-seats" ? <div className="space-y-8"><HotSeatAdmin /><BreakLoungeAdmin /></div> : null}
+
+        {/* TAB 5: AUDIT LOGS */}
         {activeTab === "audit" ? (
           <section className="space-y-4">
             <div className="flex flex-col gap-1">
