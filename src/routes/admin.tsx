@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import {
   AdminEngagementManager,
   AdminMonetizationControl,
+  AdminCampaignReports,
   AdminOverviewStats,
   AdminPricingManager,
   AdminUserManagement,
@@ -56,7 +57,7 @@ export const Route = createFileRoute("/admin")({
   },
 });
 
-type AdminTab = "overview" | "users" | "pricing" | "monetization" | "engagement" | "daily-activities" | "wcw-mcm" | "hot-seats" | "audit";
+type AdminTab = "overview" | "users" | "pricing" | "monetization" | "campaign-reports" | "engagement" | "daily-activities" | "wcw-mcm" | "hot-seats" | "audit";
 
 function AdminDashboardPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
@@ -90,6 +91,7 @@ function AdminDashboardPage() {
       { id: "users", label: `Users & Economy (${users.length})`, icon: Users },
       { id: "pricing", label: "Coin Store & VIP Pricing", icon: Coins },
       { id: "monetization", label: "Ad & Monetization", icon: Megaphone },
+      { id: "campaign-reports", label: "Campaign Reports", icon: Megaphone },
       { id: "engagement", label: "Engagement & Events", icon: Sparkles },
       { id: "daily-activities", label: "Daily Activities", icon: Sparkles },
       { id: "wcw-mcm", label: "WCW & MCM", icon: Radio },
@@ -229,7 +231,9 @@ function AdminDashboardPage() {
           />
         ) : null}
 
-        {/* TAB 4: ENGAGEMENT & EVENTS MANAGER */}
+        {activeTab === "campaign-reports" ? <AdminCampaignReports /> : null}
+
+        {/* TAB 4: ENGAGEMENT & EVENTS MANAGER */
         {activeTab === "engagement" ? (
           <AdminEngagementManager
             engagementConfig={engagementConfig}
