@@ -104,7 +104,7 @@ export function openAdExternalUrl(url?: string, sponsorTitle?: string): void {
  */
 export function notifyAdEvent(
   event: "impression" | "click" | "skipped" | "rewarded_complete",
-  payload: { adId: string; format: "banner" | "video" | "rewarded"; rewardAmount?: number },
+  payload: { adId: string; format: "banner" | "video" | "rewarded"; rewardAmount?: number; placement?: string },
 ): void {
   try {
     if (typeof window === "undefined") return;
@@ -120,7 +120,7 @@ export function notifyAdEvent(
       window.AndroidBridge?.onRewardedAdComplete?.(payload.rewardAmount);
     }
 
-    // Fire custom browser event for web telemetry/event bus
+    // Persist telemetry in the real Circle Panda Supabase analytics table.\n    // Country is coarse (ISO country only); no precise location is collected.\n    void Promise.all([supabase.auth.getUser(), getCountryCode()]).then(async ([authResult, countryCode]) => {\n      const userId = authResult.data.user?.id ?? null;\n      if (!userId) return;\n      const eventType = event === "rewarded_complete" ? "completed" : event;\n      await supabase.from("ad_events").insert({\n        ad_id: payload.adId,\n        user_id: userId,\n        event_type: eventType,\n        format: payload.format,\n        placement: payload.placement ?? null,\n        country_code: countryCode,\n        value: payload.rewardAmount ?? 0,\n      });\n    }).catch(() => {\n      // Analytics failure must never interrupt the ad or user experience.\n    });\n\n    // Fire custom browser event for web telemetry/event bus
     window.dispatchEvent(
       new CustomEvent("circle_panda_ad_event", {
         detail: { event, ...payload, timestamp: Date.now() },
