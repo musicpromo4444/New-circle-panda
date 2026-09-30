@@ -17,7 +17,6 @@ export function RewardQualificationFlow({ qualificationId, prize, onClose }: { q
   const [stageIndex, setStageIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string,string>>({});
   const [loading, setLoading] = useState(true);
-  const [done, setDone] = useState(false);
   const [completedStage, setCompletedStage] = useState<Stage | null>(null);
   const [nextStage, setNextStage] = useState<Stage | null>(null);
 
