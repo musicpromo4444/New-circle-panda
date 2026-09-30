@@ -51,15 +51,26 @@ function HotSeatPage(){
   const sendChat=async()=>{if(!host||!chatText.trim())return;const {error}=await supabase.rpc("send_hot_seat_chat_secure",{p_host_id:host.id,p_body:chatText.trim()});if(error){toast.error(error.message);return;}setChatText("");void load()};
   const join=async(bid:number)=>{const {error}=await supabase.rpc("join_hot_seat_queue_secure",{p_bid_bc:bid});if(error){toast.error(error.message);return;}setJoined(true);toast.success(bid===25?"Priority boosted.":"Joined Hot Seat queue.");void load()};
   const like=async()=>{if(!host)return;const {data,error}=await supabase.rpc("toggle_hot_seat_like",{p_host_id:host.id});if(error)toast.error(error.message);else setLikes(Number(data?.like_count??likes))};
-  const follow=async()=>{if(!host)return;const {error}=await supabase.from("hot_seat_follows").upsert({host_id:host.id});if(error)toast.error(error.message);else toast.success("Hot Seat follow updated.")};
-  const gift=async(g:VirtualGift)=>{if(!host)return;const {error}=await supabase.rpc("send_hot_seat_gift",{p_host_id:host.id,p_gift_id:g.id,p_gift_name:g.name,p_gift_emoji:g.emoji,p_cost_bc:g.cost});if(error)toast.error(error.message);else{toast.success(g.emoji+" "+g.name+" sent.");void load()}};
+  const follow=async()=>{
+    if(!host)return;
+    const {data:user}=await supabase.auth.getUser();
+    if(!user.user){toast.error("Please sign in to follow Hot Seat.");return;}
+    const {error}=await supabase.from("hot_seat_follows").upsert({user_id:user.user.id,host_id:host.id},{onConflict:"user_id"});
+    if(error)toast.error(error.message);else toast.success("Hot Seat follow updated.");
+  };
+  const gift=async(g:VirtualGift)=>{
+    if(!host) throw new Error("Hot Seat session is unavailable.");
+    const {error}=await supabase.rpc("send_hot_seat_gift",{p_host_id:host.id,p_gift_id:g.id,p_gift_name:g.name,p_gift_emoji:g.emoji,p_cost_bc:g.cost});
+    if(error) throw new Error(error.message);
+    void load();
+  };
 
   if(!host)return <main className="grid min-h-screen place-items-center bg-background p-6 text-center"><div><h1 className="text-2xl font-bold">Hot Seat is between sessions.</h1><p className="mt-2 text-sm text-muted-foreground">The next live session will appear automatically.</p><Button className="mt-4" onClick={()=>navigate({to:"/"})}>Back to Circle Panda</Button></div></main>;
 
   return <main className="min-h-screen bg-background pb-24">
     <header className="sticky top-0 z-40 flex items-center justify-between border-b bg-background/90 px-3 py-2 backdrop-blur">
       <Button variant="ghost" size="sm" onClick={()=>navigate({to:"/"})}><ArrowLeft className="mr-1 size-4"/>Circle Panda</Button>
-      <span className="rounded-full bg-destructive/10 px-2 py-1 text-[10px] font-bold text-destructive">LIVE · {host.stream_provider}</span>
+      <span className="rounded-full bg-destructive/10 px-2 py-1 text-[10px] font-bold text-destructive">{host.pause_until&&new Date(host.pause_until).getTime()>Date.now()?"PAUSED":"LIVE"} · {host.stream_provider}</span>
     </header>
     <section className="mx-auto max-w-3xl">
       <HostReel host={host}/>
