@@ -6,4 +6,5 @@ export * from "./AdminUserManagement";
 export * from "./AdminMonetizationControl";
 export * from "./AdminEngagementManager";
 export * from "./AdminPricingManager";
+export * from "./AdminCampaignReports";
 export * from "./AdminRoute";
