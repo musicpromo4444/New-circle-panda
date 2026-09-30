@@ -472,7 +472,7 @@ export function LiveChatDrawer({
                     onChange={(e) => setPriorityBoost(e.target.checked)}
                     className="accent-orange-500"
                   />
-                  <span>Boost with Priority (25 BC)</span>
+                  <span>Boost with Priority (10 BC)</span>
                 </label>
                 <span>{inputQuestion.length}/280 · Anonymous</span>
               </div>
