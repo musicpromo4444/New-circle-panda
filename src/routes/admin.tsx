@@ -31,6 +31,7 @@ import { AdminDailyActivitiesManager } from "@/components/admin/AdminDailyActivi
 import { AdminCrushManager } from "@/components/admin/AdminCrushManager";
 import { BreakLoungeAdmin } from "@/components/break-lounge/Giveaway";
 import { HotSeatAdmin } from "@/components/admin/HotSeatAdmin";
+import { AdminRewardEngine } from "@/components/admin/AdminRewardEngine";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -58,7 +59,7 @@ export const Route = createFileRoute("/admin")({
   },
 });
 
-type AdminTab = "overview" | "users" | "pricing" | "monetization" | "campaign-reports" | "engagement" | "daily-activities" | "wcw-mcm" | "hot-seats" | "audit";
+type AdminTab = "overview" | "users" | "pricing" | "monetization" | "campaign-reports" | "engagement" | "daily-activities" | "wcw-mcm" | "hot-seats" | "reward-engine" | "audit";
 
 function AdminDashboardPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
@@ -97,6 +98,7 @@ function AdminDashboardPage() {
       { id: "daily-activities", label: "Daily Activities", icon: Sparkles },
       { id: "wcw-mcm", label: "WCW & MCM", icon: Radio },
       { id: "hot-seats", label: "Hot Seats", icon: Radio },
+      { id: "reward-engine", label: "Reward Engine", icon: Sparkles },
       { id: "audit", label: "Audit Logs", icon: History },
     ];
 
@@ -249,6 +251,8 @@ function AdminDashboardPage() {
         ) : null}
 
         {activeTab === "hot-seats" ? <div className="space-y-8"><HotSeatAdmin /><BreakLoungeAdmin /></div> : null}
+
+        {activeTab === "reward-engine" ? <AdminRewardEngine /> : null}
 
         {/* TAB 5: AUDIT LOGS */}
         {activeTab === "audit" ? (
