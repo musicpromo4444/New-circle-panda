@@ -53,10 +53,8 @@ function HotSeatPage(){
   const like=async()=>{if(!host)return;const {data,error}=await supabase.rpc("toggle_hot_seat_like",{p_host_id:host.id});if(error)toast.error(error.message);else setLikes(Number(data?.like_count??likes))};
   const follow=async()=>{
     if(!host)return;
-    const {data:user}=await supabase.auth.getUser();
-    if(!user.user){toast.error("Please sign in to follow Hot Seat.");return;}
-    const {error}=await supabase.from("hot_seat_follows").upsert({user_id:user.user.id,host_id:host.id},{onConflict:"user_id"});
-    if(error)toast.error(error.message);else toast.success("Hot Seat follow updated.");
+    const {data,error}=await supabase.rpc("toggle_hot_seat_follow_secure",{p_host_id:host.id});
+    if(error)toast.error(error.message);else toast.success(data?.following?"Hot Seat followed.":"Hot Seat unfollowed.");
   };
   const gift=async(g:VirtualGift)=>{
     if(!host) throw new Error("Hot Seat session is unavailable.");
