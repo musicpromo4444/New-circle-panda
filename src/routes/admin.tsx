@@ -30,6 +30,7 @@ import { useCurrentUser } from "@/lib/auth";
 import { AdminDailyActivitiesManager } from "@/components/admin/AdminDailyActivitiesManager";
 import { AdminCrushManager } from "@/components/admin/AdminCrushManager";
 import { BreakLoungeAdmin } from "@/components/break-lounge/Giveaway";
+import { HotSeatAdmin } from "@/components/admin/HotSeatAdmin";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -247,7 +248,7 @@ function AdminDashboardPage() {
           <AdminDailyActivitiesManager config={engagementConfig.dailyActivities} onUpdate={updateDailyActivities} />
         ) : null}
 
-        {activeTab === "hot-seats" ? <BreakLoungeAdmin /> : null}\n\n        {/* TAB 5: AUDIT LOGS */}
+        {activeTab === "hot-seats" ? <div className="space-y-8"><HotSeatAdmin /><BreakLoungeAdmin /></div> : null}\n\n        {/* TAB 5: AUDIT LOGS */}
         {activeTab === "audit" ? (
           <section className="space-y-4">
             <div className="flex flex-col gap-1">
