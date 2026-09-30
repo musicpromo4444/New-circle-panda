@@ -60,7 +60,7 @@ function HotSeatPage(){
   };
   const gift=async(g:VirtualGift)=>{
     if(!host) throw new Error("Hot Seat session is unavailable.");
-    const {error}=await supabase.rpc("send_hot_seat_gift",{p_host_id:host.id,p_gift_id:g.id,p_gift_name:g.name,p_gift_emoji:g.emoji,p_cost_bc:g.cost});
+    const {error}=await supabase.rpc("send_hot_seat_gift_secure",{p_host_id:host.id,p_gift_id:g.id});
     if(error) throw new Error(error.message);
     void load();
   };
