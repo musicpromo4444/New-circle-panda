@@ -6,10 +6,10 @@ import { formatCountdown, type HostRow } from "@/lib/hotseat";
 export function HostReel({ host }: { host: HostRow }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
-  const [left, setLeft] = useState(() => new Date(host.ends_at).getTime() - Date.now());
+  const [left, setLeft] = useState(() => { const elapsed = Math.max(0, Date.now() - new Date(host.started_at).getTime()); const pos = Math.floor(elapsed / 1000) % 14400; return Math.max(0, (pos < 10800 ? 10800 - pos : 14400 - pos) * 1000); });
 
   useEffect(() => {
-    const i = setInterval(() => setLeft(new Date(host.ends_at).getTime() - Date.now()), 1000);
+    const i = setInterval(() => setLeft(() => { const elapsed = Math.max(0, Date.now() - new Date(host.started_at).getTime()); const pos = Math.floor(elapsed / 1000) % 14400; return Math.max(0, (pos < 10800 ? 10800 - pos : 14400 - pos) * 1000); }), 1000);
     return () => clearInterval(i);
   }, [host.ends_at]);
 
