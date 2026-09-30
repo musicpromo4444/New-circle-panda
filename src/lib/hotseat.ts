@@ -10,6 +10,8 @@ export type HostRow = {
   started_at: string;
   ends_at: string;
   is_active: boolean;
+  stream_provider?: "youtube" | "aws" | "zegocloud";
+  pause_until?: string | null;
 };
 
 export type AnswerRow = {
