@@ -31,6 +31,8 @@ export function AdminCampaignReports() {
   const [selected, setSelected] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [showCreate, setShowCreate] = useState(false);
+  const [form, setForm] = useState({ campaign_name: "", advertiser_name: "", partner_name: "", pricing_model: "impressions", budget: "", currency: "USD", target_countries: "", status: "draft" });
 
   const load = async () => {
     setLoading(true);
@@ -71,6 +73,16 @@ export function AdminCampaignReports() {
     completions: a.completions + Number(c.completions || 0),
   }), { impressions: 0, clicks: 0, completions: 0 });
 
+  const createCampaign = async () => {
+    if (!form.campaign_name.trim() || !form.advertiser_name.trim()) return;
+    const { error } = await supabase.from("ad_campaigns").insert({
+      campaign_name: form.campaign_name.trim(), advertiser_name: form.advertiser_name.trim(), partner_name: form.partner_name.trim() || null,
+      pricing_model: form.pricing_model, budget: form.budget ? Number(form.budget) : null, currency: form.currency,
+      target_countries: form.target_countries.split(",").map(x => x.trim().toUpperCase()).filter(Boolean), status: form.status,
+    });
+    if (!error) { setShowCreate(false); setForm({ campaign_name: "", advertiser_name: "", partner_name: "", pricing_model: "impressions", budget: "", currency: "USD", target_countries: "", status: "draft" }); await load(); }
+  };
+
   const exportReport = () => {
     const rows = [
       ["Campaign","Advertiser","Circle Partner","Status","Impressions","Clicks","Completions","Skips","Tracked Value"],
@@ -96,7 +108,7 @@ export function AdminCampaignReports() {
       </div>
     </div>
 
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+    {showCreate && <div className="rounded-2xl border border-border/80 bg-card p-4">\n      <div className="mb-3 font-semibold">Create advertiser campaign</div>\n      <div className="grid gap-3 sm:grid-cols-2">\n        <Input placeholder="Campaign name" value={form.campaign_name} onChange={e => setForm(f => ({...f,campaign_name:e.target.value}))} />\n        <Input placeholder="Advertiser / brand" value={form.advertiser_name} onChange={e => setForm(f => ({...f,advertiser_name:e.target.value}))} />\n        <Input placeholder="Circle Partner (optional)" value={form.partner_name} onChange={e => setForm(f => ({...f,partner_name:e.target.value}))} />\n        <Input placeholder="Target countries, e.g. NG, GH, KE" value={form.target_countries} onChange={e => setForm(f => ({...f,target_countries:e.target.value}))} />\n        <Input inputMode="decimal" placeholder="Campaign budget" value={form.budget} onChange={e => setForm(f => ({...f,budget:e.target.value}))} />\n        <select value={form.pricing_model} onChange={e => setForm(f => ({...f,pricing_model:e.target.value}))} className="h-10 rounded-md border border-border bg-background px-3 text-sm"><option value="impressions">CPM / Impressions</option><option value="clicks">CPC / Clicks</option><option value="actions">CPA / Actions</option><option value="fixed">Fixed Campaign</option></select>\n      </div>\n      <div className="mt-3 flex justify-end gap-2"><Button variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button><Button onClick={() => void createCampaign()}>Create Campaign</Button></div>\n    </div>}\n\n    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
       {[
         ["Impressions", totals.impressions, Eye],
         ["Clicks", totals.clicks, MousePointerClick],
