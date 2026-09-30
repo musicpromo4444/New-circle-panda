@@ -100,6 +100,7 @@ export function QuestionCard({ question }: { question: QuestionRow }) {
       <MediaUnlockModal
         open={pending !== null}
         onOpenChange={(o) => (!o ? setPending(null) : null)}
+        answerId={pending}
         onUnlocked={() => {
           if (pending) setUnlocked((u) => ({ ...u, [pending]: true }));
         }}
