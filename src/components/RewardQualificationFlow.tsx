@@ -3,6 +3,7 @@ import { CheckCircle2, ExternalLink, Gift, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import { BannerAd } from "@/components/ads/BannerAd";
 
 type Prize = {
   title: string; description?: string | null; image_url?: string | null; emoji: string;
@@ -61,7 +62,7 @@ export function RewardQualificationFlow({ qualificationId, prize, onClose }: { q
     <div className="space-y-3">
       {fields.map((f) => <div key={f.key}><label className="mb-1 block text-xs font-medium">{f.label}{f.required ? " *" : ""}</label><Input value={answers[f.key] ?? ""} onChange={(e) => setAnswers((a) => ({...a,[f.key]:e.target.value}))} placeholder={f.options?.join(" / ")} /></div>)}
     </div>
-    <Button className="w-full" onClick={submit} disabled={loading}>{loading ? "Saving…" : stage ? (stageIndex + 1 < stages.length ? "Next" : "Submit") : "Continue"}</Button>
+    {stage?.ad_enabled ? <BannerAd className="mt-2" /> : null}<Button className="w-full" onClick={submit} disabled={loading}>{loading ? "Saving…" : stage ? (stageIndex + 1 < stages.length ? "Next" : "Submit") : "Continue"}</Button>
     <p className="text-center text-[11px] text-muted-foreground">Sponsor activities and data requests are shown as configured by Circle Panda.</p>
   </div>;
 }
