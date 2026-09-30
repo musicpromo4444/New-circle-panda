@@ -10,7 +10,7 @@ type Prize = {
   prize_type: string; value: number; qualification_label: string; fulfilment_type: string;
   fulfilment_config?: Record<string, unknown>;
 };
-type Stage = { id: string; stage_number: number; title: string; instructions?: string | null; stage_type: string; sponsor_name?: string | null; action_url?: string | null; form_config?: { fields?: Array<{key:string;label:string;type?:string;required?:boolean;options?:string[]}> } };
+type Stage = { id: string; stage_number: number; title: string; instructions?: string | null; stage_type: string; sponsor_name?: string | null; action_url?: string | null; released_at?: string | null; form_config?: { fields?: Array<{key:string;label:string;type?:string;required?:boolean;options?:string[]}> } };
 
 export function RewardQualificationFlow({ qualificationId, prize, onClose }: { qualificationId: string; prize: Prize; onClose: () => void }) {
   const [stages, setStages] = useState<Stage[]>([]);
@@ -18,6 +18,8 @@ export function RewardQualificationFlow({ qualificationId, prize, onClose }: { q
   const [answers, setAnswers] = useState<Record<string,string>>({});
   const [loading, setLoading] = useState(true);
   const [done, setDone] = useState(false);
+  const [completedStage, setCompletedStage] = useState<Stage | null>(null);
+  const [nextStage, setNextStage] = useState<Stage | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -44,14 +46,19 @@ export function RewardQualificationFlow({ qualificationId, prize, onClose }: { q
       p_qualification_id: qualificationId, p_stage_id: stage.id, p_answers: answers,
     });
     if (!error) {
+      const next = stages[stageIndex + 1] ?? null;
       setAnswers({});
-      if (stageIndex + 1 < stages.length) setStageIndex((v) => v + 1);
-      else setDone(true);
+      setCompletedStage(stage);
+      setNextStage(next);
     }
     setLoading(false);
   };
 
-  if (done) return <div className="space-y-4 text-center"><CheckCircle2 className="mx-auto size-12 text-primary" /><h3 className="font-display text-xl font-bold">Qualification submitted</h3><p className="text-sm text-muted-foreground">Hold on for the next announcement. If another stage is added, Circle Panda will notify you.</p><Button className="w-full" onClick={onClose}>Done</Button></div>;
+  if (completedStage) {
+    if (!nextStage) return <div className="space-y-4 text-center"><CheckCircle2 className="mx-auto size-12 text-primary" /><h3 className="font-display text-xl font-bold">All qualification stages completed</h3><p className="text-sm text-muted-foreground">You are now in the finalist pool. Circle Panda will notify you about the final selection.</p><Button className="w-full" onClick={onClose}>Done for now</Button></div>;
+    const released = Boolean(nextStage.released_at);
+    return <div className="space-y-4 text-center"><CheckCircle2 className="mx-auto size-12 text-primary" /><h3 className="font-display text-xl font-bold">Stage {completedStage.stage_number} completed</h3><p className="text-sm text-muted-foreground">{released ? "Stage " + nextStage.stage_number + " is ready, but you do not have to complete it now." : "Stage " + nextStage.stage_number + " is not open yet. We will notify you when it is released."}</p>{released ? <Button className="w-full" onClick={()=>{setCompletedStage(null);setStageIndex(stageIndex+1)}}>Continue to Stage {nextStage.stage_number}</Button> : null}<Button className="w-full" variant="outline" onClick={onClose}>Done for now</Button></div>;
+  }
   if (loading) return <div className="grid min-h-40 place-items-center"><Loader2 className="animate-spin" /></div>;
 
   const fields = stage?.form_config?.fields ?? [{key:"contact_method",label:"How would you like to receive updates?",type:"text",required:true}];
