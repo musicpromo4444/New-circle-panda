@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Timer, Volume2, VolumeX } from "lucide-react";
 import { formatCountdown, type HostRow } from "@/lib/hotseat";
 
-/** Top 40%: the host's looping 24-hour reel with mute toggle, tenure timer and host badge. */
+/** Hot Seat live-cycle reel with mute toggle and the live-cycle timer. */
 export function HostReel({ host }: { host: HostRow }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
@@ -57,7 +57,7 @@ export function HostReel({ host }: { host: HostRow }) {
         </span>
         <div className="min-w-0">
           <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary-foreground">
-            Host · 24-Hour Tenure
+            Host · 3-Hour Live Cycle
           </span>
           <p className="truncate font-display text-lg font-semibold">{host.alias}</p>
         </div>
