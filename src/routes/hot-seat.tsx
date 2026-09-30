@@ -52,7 +52,7 @@ function HotSeatPage(){
   const join=async(bid:number)=>{const {error}=await supabase.rpc("join_hot_seat_queue_secure",{p_bid_bc:bid});if(error){toast.error(error.message);return;}setJoined(true);toast.success(bid===25?"Priority boosted.":"Joined Hot Seat queue.");void load()};
   const like=async()=>{if(!host)return;const {data,error}=await supabase.rpc("toggle_hot_seat_like",{p_host_id:host.id});if(error)toast.error(error.message);else setLikes(Number(data?.like_count??likes))};
   const follow=async()=>{if(!host)return;const {error}=await supabase.from("hot_seat_follows").upsert({host_id:host.id});if(error)toast.error(error.message);else toast.success("Hot Seat follow updated.")};
-  const gift=async(g:VirtualGift)=>{if(!host)return;const {error}=await supabase.rpc("send_hot_seat_gift",{p_host_id:host.id,p_gift_id:g.id});if(error)toast.error(error.message);else{toast.success(g.emoji+" "+g.name+" sent.");void load()}};
+  const gift=async(g:VirtualGift)=>{if(!host)return;const {error}=await supabase.rpc("send_hot_seat_gift",{p_host_id:host.id,p_gift_id:g.id,p_gift_name:g.name,p_gift_emoji:g.emoji,p_cost_bc:g.cost});if(error)toast.error(error.message);else{toast.success(g.emoji+" "+g.name+" sent.");void load()}};
 
   if(!host)return <main className="grid min-h-screen place-items-center bg-background p-6 text-center"><div><h1 className="text-2xl font-bold">Hot Seat is between sessions.</h1><p className="mt-2 text-sm text-muted-foreground">The next live session will appear automatically.</p><Button className="mt-4" onClick={()=>navigate({to:"/"})}>Back to Circle Panda</Button></div></main>;
 
