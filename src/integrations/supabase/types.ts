@@ -5736,6 +5736,18 @@ export type Database = {
         Returns: Json
       }
       cp_admin_is_admin: { Args: never; Returns: boolean }
+      cp_admin_list_reward_qualifications: {
+        Args: { p_campaign_id: string }
+        Returns: {
+          created_at: string
+          current_stage: number
+          display_name: string
+          prize_name: string
+          qualification_id: string
+          status: string
+          user_id: string
+        }[]
+      }
       cp_admin_reward_campaign_upsert: {
         Args: {
           p_description?: string
@@ -5790,6 +5802,10 @@ export type Database = {
           p_title?: string
         }
         Returns: string
+      }
+      cp_admin_select_reward_winner: {
+        Args: { p_qualification_id: string }
+        Returns: Json
       }
       cp_finalize_expired_winner_cycles: { Args: never; Returns: number }
       cp_finalize_winner_cycle: { Args: { p_cycle_id: string }; Returns: Json }
