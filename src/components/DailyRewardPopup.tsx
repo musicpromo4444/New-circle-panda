@@ -1,4 +1,5 @@
 import { DailyModalSequence } from "@/components/daily-bonus";
+import { RewardQualificationResume } from "@/components/RewardQualificationResume";
 
 /**
  * Sequential Daily Modal System for Circle Panda
@@ -10,5 +11,5 @@ import { DailyModalSequence } from "@/components/daily-bonus";
  *    showcasing Free Spins, Quizzes, Hot Seat, and Crush Swipes with instant actions).
  */
 export function DailyRewardPopup() {
-  return <DailyModalSequence />;
+  return <><DailyModalSequence /><RewardQualificationResume /></>;
 }
